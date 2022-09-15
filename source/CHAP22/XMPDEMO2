@@ -1,0 +1,83 @@
+//**********************************************************************05190000
+//* ERASE ALL EMP-IDS FROM 1000 TO 2000                                 05200000
+//* AND RESET COMMIT FILE BACK TO ZERO                                  05201000
+//**********************************************************************05210000
+//STEP01   EXEC PGM=EMPDEMO3,PARM='Y',REGION=3M,COND=(4,LT)             05221000
+//STEPLIB DD  DISP=SHR,DSN=IDMS.TEST.LOADLIB                            05230000
+//        DD  DISP=SHR,DSN=IDMS.R120.LOADLIB                           05240000
+//        DD  DISP=SHR,DSN=NRW.WORK.LOADLIB                             05250000
+//SYSCTL  DD  DISP=SHR,DSN=IDMS.TEST.SYSCTL                             05260000
+//COMMIT1 DD  DISP=SHR,DSN=NRW.EMPDEMO.COMMIT.FILE                      05261000
+//SYSIDMS  DD *                                                         05270000
+DMCL=TESTDMCL                                                           05280000
+DBNAME=EMPDEMO                                                          05290000
+//SYSLST  DD  SYSOUT=*                                                  05300000
+//CEEDUMP DD  SYSOUT=*                                                  05310000
+//SYSOUT  DD  SYSOUT=*,DCB=(RECFM=FB,LRECL=133,BLKSIZE=133)             05320000
+//*                                                                     05330000
+//**********************************************************************05340000
+//* READ AND STORE EMPLOYEES FROM //INPUT1                              05350000
+//* PARM=Y,NNNN,MMMM                                                    05360000
+//*   WHERE Y = Y/N FOR TRACE                                           05370000
+//*      AND NNNN IS COMMIT-FREQUENCY                                   05380000
+//*      AND MMMM IS TO FORCE AN ABEND AFTER UPDATE #MMMM               05390000
+//**********************************************************************05400000
+//* STEP02 - SET COMMIT FREQ AT 3, AND ABEND-LOC AT 8                   05401000
+//**********************************************************************05402000
+//STEP02   EXEC PGM=EMPDEMO2,PARM='Y,0003,0008',REGION=4M,COND=(4,LT)   05410000
+//STEPLIB DD  DISP=SHR,DSN=IDMS.TEST.LOADLIB                            05420000
+//        DD  DISP=SHR,DSN=IDMS.R120.LOADLIB                           05430000
+//        DD  DISP=SHR,DSN=NRW.WORK.LOADLIB                             05440000
+//SYSCTL  DD  DISP=SHR,DSN=IDMS.TEST.SYSCTL                             05450000
+//SYSIDMS  DD *                                                         05460000
+DMCL=TESTDMCL                                                           05470000
+DBNAME=EMPDEMO                                                          05480000
+//SYSLST  DD  SYSOUT=*                                                  05490000
+//CEEDUMP DD  SYSOUT=*                                                  05500000
+//SYSOUT  DD  SYSOUT=*,DCB=(RECFM=FB,LRECL=133,BLKSIZE=133)             05510000
+//COMMIT1 DD  DISP=SHR,DSN=NRW.EMPDEMO.COMMIT.FILE                      05520000
+//INPUT1  DD  *                                                         05530000
+*DEPT OFF EMP  FIRST-NAME      LAST-NAME                                05540000
+*1234 123 1234 123456789012345 123456789012345678901234                 05550000
+ 5300 001 1001 JOHN            DOE                                      05560000
+ 5100 005 1002 JANE            DOE                                      05570000
+ 2000 008 1003 JIM             DOVE                                     05580000
+ 1000 012 1004 SALLY           DOVER                                    05590000
+ 1000 002 1005 SANDY           DOLITTLE                                 05600000
+ 5300 001 1006 SAM             SMITH                                    05610000
+ 5100 005 1007 SAMUEL          SMITHE                                   05620000
+ 2000 008 1008 SAMSON          SMYTHE                                   05630000
+ 1000 012 1009 JOHNNY          SMITTIE                                  05640000
+ 1000 002 1010 JIMMY           SMITHSON                                 05650000
+ 1000 008 1011 JON             SMITHSTEIN                               05660000
+//**********************************************************************05670000
+//* STEP03 - SIMULATE RESTART AFTER ABEND AT LOC 8                      05680000
+//* THE COND=(EVEN) CAUSES THIS STEP TO RUN, EVEN THOUGH THE            05681000
+//* PRIOR STEP ABENDED WITH THE DIVIDE BY ZERO ABEND (S0CB).            05682000
+//**********************************************************************05690000
+//STEP03   EXEC PGM=EMPDEMO2,PARM='Y,0003,0000',REGION=4M,COND=(EVEN)   05700000
+//STEPLIB DD  DISP=SHR,DSN=IDMS.TEST.LOADLIB                            05710000
+//        DD  DISP=SHR,DSN=IDMS.R120.LOADLIB                           05720000
+//        DD  DISP=SHR,DSN=NRW.WORK.LOADLIB                             05730000
+//SYSCTL  DD  DISP=SHR,DSN=IDMS.TEST.SYSCTL                             05740000
+//SYSIDMS  DD *                                                         05750000
+DMCL=TESTDMCL                                                           05760000
+DBNAME=EMPDEMO                                                          05770000
+//SYSLST  DD  SYSOUT=*                                                  05780000
+//CEEDUMP DD  SYSOUT=*                                                  05790000
+//SYSOUT  DD  SYSOUT=*,DCB=(RECFM=FB,LRECL=133,BLKSIZE=133)             05800000
+//COMMIT1 DD  DISP=SHR,DSN=NRW.EMPDEMO.COMMIT.FILE                      05810000
+//INPUT1  DD  *                                                         05820000
+*DEPT OFF EMP  FIRST-NAME      LAST-NAME                                05830000
+*1234 123 1234 123456789012345 123456789012345678901234                 05840000
+ 5300 001 1001 JOHN            DOE                                      05850000
+ 5100 005 1002 JANE            DOE                                      05860000
+ 2000 008 1003 JIM             DOVE                                     05870000
+ 1000 012 1004 SALLY           DOVER                                    05880000
+ 1000 002 1005 SANDY           DOLITTLE                                 05890000
+ 5300 001 1006 SAM             SMITH                                    05900000
+ 5100 005 1007 SAMUEL          SMITHE                                   05910000
+ 2000 008 1008 SAMSON          SMYTHE                                   05920000
+ 1000 012 1009 JOHNNY          SMITTIE                                  05930000
+ 1000 002 1010 JIMMY           SMITHSON                                 05940000
+ 1000 008 1011 JON             SMITHSTEIN                               05950000

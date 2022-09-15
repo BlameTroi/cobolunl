@@ -1,0 +1,16 @@
+//**********************************************************************03540000
+//* PARM1 = Y/N FOR TRACE                                               03550000
+//**********************************************************************03560000
+//*                                                                     03570000
+//STEP01   EXEC PGM=EMPDEMO3,PARM='Y',REGION=3M,COND=(4,LT)             03580000
+//STEPLIB DD  DISP=SHR,DSN=IDMS.TEST.LOADLIB                            03590000
+//        DD  DISP=SHR,DSN=IDMS.R120.LOADLIB                            03600000
+//        DD  DISP=SHR,DSN=NRW.WORK.LOADLIB                             03610000
+//SYSCTL  DD  DISP=SHR,DSN=IDMS.TEST.SYSCTL                             03620000
+//COMMIT1 DD  DISP=SHR,DSN=NRW.EMPDEMO.COMMIT.FILE                      03621000
+//SYSIDMS  DD *                                                         03630000
+DMCL=TESTDMCL                                                           03640000
+DBNAME=EMPDEMO                                                          03650000
+//SYSLST  DD  SYSOUT=*                                                  03660000
+//CEEDUMP DD  SYSOUT=*                                                  03670000
+//SYSOUT  DD  SYSOUT=*,DCB=(RECFM=FB,LRECL=133,BLKSIZE=133)             03680000

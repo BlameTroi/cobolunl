@@ -1,0 +1,211 @@
+Author:  "Thane Hubbell" <redsky@ibm.net> at internet
+Date:    4/5/98  10:37 PM
+Priority: Normal
+Receipt Requested
+TO: David Mayhew at MP-POST9
+TO: hubbelth@iix.com at INTERNET
+Subject: COBOL Unleashed Chapter 8.
+------------------------------- Message Contents -------------------------------
+      ********************************
+      * parameter for CONVERSE-PANEL *
+      * parameter for GET-INPUT      *
+      ********************************
+       01  CHAPT08-CONVERSE-DATA.
+           05  CHAPT08-RET-CODE       
+                                       PIC S9(4) COMP-5.
+           05  CHAPT08-LENS.
+               10  CHAPT08-LEN-LEN    
+                                       PIC S9(4) COMP-5 VALUE +20.
+               10  CHAPT08-IP-NUM-LEN 
+                                       PIC S9(4) COMP-5 VALUE +40.
+               10  CHAPT08-IP-CHAR-LEN
+                                       PIC S9(4) COMP-5 VALUE +106.
+               10  CHAPT08-OP-NUM-LEN 
+                                       PIC S9(4) COMP-5 VALUE +6.
+               10  CHAPT08-OP-CHAR-LEN  
+                                       PIC S9(4) COMP-5 VALUE +2.
+               10  CHAPT08-FIELD-LEN  
+                                       PIC S9(4) COMP-5 VALUE +122.
+               10  CHAPT08-COLR-LEN   
+                                       PIC S9(4) COMP-5 VALUE +11.
+               10  CHAPT08-TYPE-LEN   
+                                       PIC S9(4) COMP-5 VALUE +11.
+               10  FILLER           
+                                       PIC S9(4) COMP-5 VALUE +0.
+               10  FILLER          
+                                       PIC S9(4) COMP-5 VALUE +0.
+           05  CHAPT08-DATA.
+      ******** CHAPT08-IP-NUM-DATA ********
+               10  CHAPT08-KEY        
+                                       PIC S9(4) COMP-5.
+                   88  CHAPT08-Add-PB-HIT   
+                                       VALUE 317.
+                   88  CHAPT08-Change-PB-HIT   
+                                       VALUE 318.
+                   88  CHAPT08-Delete-PB-HIT   
+                                       VALUE 320.
+                   88  CHAPT08-Retrieve-PB-HIT   
+                                       VALUE 13.
+                   88  CHAPT08-Next-PB-HIT   
+                                       VALUE 322.
+                   88  CHAPT08-Prior-PB-HIT   
+                                       VALUE 321.
+               10  CHAPT08-NEXT-FLD-ID  
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-NEXT-FLD-NUM 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-NEXT-TAB-NUM 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-NEXT-OCCURS  
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-FLD-ID    
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-FLD-NUM 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-TAB-NUM 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-OCCURS  
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-MENU-ID    
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-ROW-COL-SW 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-CURSOR-ROW 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-CURSOR-COL 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-ROW   
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-COL   
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-DISP-SW    
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-NEXT-VERT  
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-VERT  
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-NEXT-HOR           
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-LAST-HOR             
+                                       PIC S9(4) COMP-5.
+      ******** CHAPT08-IP-CHAR-DATA ********
+               10  CHAPT08-NEXT-PANEL 
+                                       PIC X(8).
+               10  CHAPT08-NEXT-FIELD 
+                                       PIC X(30).
+               10  CHAPT08-LAST-FIELD 
+                                       PIC X(30).
+               10  CHAPT08-MENU-OPTION  
+                                       PIC X(30).
+               10  CHAPT08-SWITCH-SW  
+                                       PIC X.
+               10  CHAPT08-SIZE-SW    
+                                       PIC X.
+               10  CHAPT08-MOUSE-SW   
+                                       PIC X.
+               10  CHAPT08-CAPTURE-SW 
+                                       PIC X.
+               10  CHAPT08-WAIT-SW    
+                                       PIC X.
+               10  CHAPT08-CURS-SW    
+                                       PIC X.
+               10  CHAPT08-CHG-SW       
+                                       PIC X.
+               10  CHAPT08-TIMEOUT        
+                                       PIC X.
+      ******** CHAPT08-OP-NUM-DATA ********
+               10  CHAPT08-PAN-POS-SW 
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-PAN-ROW    
+                                       PIC S9(4) COMP-5.
+               10  CHAPT08-PAN-COL    
+                                       PIC S9(4) COMP-5.
+      ******** CHAPT08-OP-CHAR-DATA ********
+               10  CHAPT08-NEW-WINDOW 
+                                       PIC X.
+               10  CHAPT08-DISPLAY-SW 
+                                       PIC X.
+      ******** CHAPT08-OP-VAR-DATA ********
+           05  CHAPT08-FIELDS.
+               10  CHAPT08-Name 
+                                       PIC X(0030).
+               10  CHAPT08-Address 
+                                       PIC X(0050).
+               10  CHAPT08-City 
+                                       PIC X(0030).
+               10  CHAPT08-State 
+                                       PIC X(0002).
+               10  CHAPT08-Postal-code 
+                                       PIC X(0010).
+           05  CHAPT08-COLRS.
+               10  CHAPT08-Name-C      
+                                       PIC X.
+               10  CHAPT08-Address-C      
+                                       PIC X.
+               10  CHAPT08-City-C      
+                                       PIC X.
+               10  CHAPT08-State-C      
+                                       PIC X.
+               10  CHAPT08-Postal-code-C      
+                                       PIC X.
+               10  CHAPT08-Add-PB-C      
+                                       PIC X.
+               10  CHAPT08-Change-PB-C      
+                                       PIC X.
+               10  CHAPT08-Delete-PB-C      
+                                       PIC X.
+               10  CHAPT08-Retrieve-PB-C      
+                                       PIC X.
+               10  CHAPT08-Next-PB-C      
+                                       PIC X.
+               10  CHAPT08-Prior-PB-C      
+                                       PIC X.
+           05  CHAPT08-TYPES.
+               10  CHAPT08-Name-T     
+                                       PIC X.
+               10  CHAPT08-Address-T     
+                                       PIC X.
+               10  CHAPT08-City-T     
+                                       PIC X.
+               10  CHAPT08-State-T     
+                                       PIC X.
+               10  CHAPT08-Postal-code-T     
+                                       PIC X.
+               10  CHAPT08-Add-PB-T     
+                                       PIC X.
+               10  CHAPT08-Change-PB-T     
+                                       PIC X.
+               10  CHAPT08-Delete-PB-T     
+                                       PIC X.
+               10  CHAPT08-Retrieve-PB-T     
+                                       PIC X.
+               10  CHAPT08-Next-PB-T     
+                                       PIC X.
+               10  CHAPT08-Prior-PB-T     
+                                       PIC X.
+      ************************************************ 
+      * field ids - use for cursor positioning, etc. * 
+      ************************************************
+       01  CHAPT08-IDS.
+           05  CHAPT08-Name-I      
+                                       PIC S9(4) COMP-5 VALUE +7.
+           05  CHAPT08-Address-I      
+                                       PIC S9(4) COMP-5 VALUE +8.
+           05  CHAPT08-City-I      
+                                       PIC S9(4) COMP-5 VALUE +10.
+           05  CHAPT08-State-I      
+                                       PIC S9(4) COMP-5 VALUE +11.
+           05  CHAPT08-Postal-code-I      
+                                       PIC S9(4) COMP-5 VALUE +9.
+           05  CHAPT08-Add-PB-I      
+                                       PIC S9(4) COMP-5 VALUE +1.
+           05  CHAPT08-Change-PB-I      
+                                       PIC S9(4) COMP-5 VALUE +2.
+           05  CHAPT08-Delete-PB-I      
+                                       PIC S9(4) COMP-5 VALUE +3.
+           05  CHAPT08-Retrieve-PB-I      
+                                       PIC S9(4) COMP-5 VALUE +4.
+           05  CHAPT08-Next-PB-I      
+                                       PIC S9(4) COMP-5 VALUE +5.
+           05  CHAPT08-Prior-PB-I      
+                                       PIC S9(4) COMP-5 VALUE +6.

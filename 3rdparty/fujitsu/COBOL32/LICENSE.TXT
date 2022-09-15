@@ -1,0 +1,36 @@
+                    FUJITSU SOFTWARE CORPORATION
+                END USER SOFTWARE LICENSE AGREEMENT
+
+IMPORTANT:  YOU SHOULD CAREFULLY READ THIS LEGAL AGREEMENT BEFORE INSTALLING THIS PACKAGE.  BY INSTALLING THIS SOFTWARE, YOU ACCEPT ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT AND AGREE TO ABIDE BY THEM.  IF THESE TERMS AND CONDITIONS ARE NOT ACCEPTABLE TO YOU, DO NOT CONTINUE TO INSTALL THIS SOFTWARE AND RETURN IT TO YOUR DISTRIBUTOR AND YOUR MONEY WILL BE REFUNDED.
+
+FUJITSU PROGRAM LICENSE TERMS
+
+CAUTION: IF YOU OPEN THIS PACKAGE OR USE THE ENCLOSED SOFTWARE, THE FOLLOWING TERMS APPLY. IF THE SOFTWARE OR THESE TERMS ARE NOT ACCEPTABLE TO YOU, RETURN THE SOFTWARE WITHIN THIRTY (30) DAYS TO THE COMPANY FROM WHICH YOU RECEIVED IT FOR REFUND.
+
+FUJITSU LIMITED OR ITS SUBSIDIARY FUJITSU SOFTWARE CORPORATION ("FUJITSU") GRANTS YOU ("CUSTOMER") A LICENSE TO USE THE ENCLOSED SOFTWARE AND DOCUMENTATION ("PROGRAMS") AS INDICATED BELOW. 
+
+LICENSE: Customer shall have the right to use the Programs in the operating environment identified by Fujitsu, either (a) to the extent specified in an ordering document or Program Use Certificate distributed to Customer by Fujitsu or its distributor, or (b) if not specified, for a single user on a single computer. Customer may use the Programs solely for its own internal data processing operations. Customer may make one copy of each licensed Program for backup; rights to make additional copies, if any, may be specified in an ordering document or Program Use Certificate. No other copies shall be made without Fujitsu's prior written consent. 
+Customer shall not: (a) remove any product identification, copyright notices, or other notices or proprietary restrictions from Programs; (b) use Programs for commercial timesharing, rental, or service bureau use; (c) transfer, sell, assign or otherwise convey Programs to another party without Fujitsu's prior written consent; (d) cause or permit reverse engineering, disassembly, or decompilation of Programs; or (e) disclose results of any benchmark tests of any Program to any third party without Fujitsu's prior written approval. All Program transfers are subject to Fujitsu's transfer policies and fees. Customer shall have the right to use only the Programs in this package that are specified in an ordering document or Program Use Certificate. 
+
+
+COPYRIGHT/OWNERSHIP OF PROGRAMS: Programs are the proprietary products of Fujitsu and its licensors and are protected by copyright and other intellectual property laws. Customer acquires only the right to use Programs and does not acquire any rights, express or implied, in Programs or media containing Programs other than those specified in this License. Fujitsu, or its licensor, shall at all times retain all rights, title, interest, including intellectual property rights, in Programs and media. 
+
+LIMITED WARRANTIES/EXCLUSIVE REMEDIES: Fujitsu warrants that for ninety (90) days from date of delivery to Customer: (a) enclosed media is free of defects in materials and workmanship under normal use; and (b) unmodified Programs will substantially perform functions described in documentation provided by Fujitsu when operated on the designated computer and operating system. 
+Fujitsu does not warrant that: Programs will meet Customer's requirements, Programs will operate in combinations Customer may select for use, operation of Programs will be uninterrupted or error-free, or all Program errors will be corrected. 
+These warranties are exclusive and in lieu of all other warranties, whether express or implied, including implied warranties of merchantability or fitness for a particular purpose. If Customer reports an error in a Program within the ninety (90) day period, Fujitsu shall, at its option, correct the error, provide Customer with a reasonable procedure to circumvent the error, or, upon return of Programs to Fujitsu by Customer, refund the license fees. 
+Fujitsu will replace any defective media without charge if it is returned to Fujitsu within the ninety (90) day warranty period. These are Customer's sole and exclusive remedies for any breach of warranty. This limited warranty gives you specific legal rights. You may have others, which vary from state to state. 
+
+LIMITATION OF LIABILITY: NEITHER FUJITSU NOR ANY OF ITS LICENSORS SHALL BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES, OR DAMAGES FOR LOSS OF PROFITS, REVENUE, DATA OR DATA USE, INCURRED BY CUSTOMER OR ANY THIRD PARTY, WHETHER IN AN ACTION IN CONTRACT OR TORT, EVEN IF FUJITSU HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. FUJITSU'S AND ITS LICENSORS' LIABILITY FOR DAMAGES HEREUNDER SHALL IN NO EVENT EXCEED THE FEES PAID BY CUSTOMER FOR THIS LICENSE. 
+
+RESTRICTED RIGHTS: Programs delivered to the U.S. Defense Dept. are delivered with Restricted Rights and the following applies: "Restricted Rights Legend: Use, duplication or disclosure by the Government is subject to restrictions as currently set forth in subparagraph (c)(1)(ii) the Rights in Technical Data and Computer Software clause at 252.227-7013 (or any successor regulation). Fujitsu Software Corporation, 3055 Orchard Drive, San Jose, California, 95134-2022.  
+Programs delivered to a U.S. Government Agency not within the Defense, Dept. are delivered with "Restricted Rights" as defined in Commercial Computer Software - Restricted Rights at FAR 52.227-19.
+Customer shall comply fully with all laws and regulations of the United States and other countries (Export Laws) to assure that neither the Programs, nor any direct products thereof are (1) exported, directly or indirectly, in violation of Export Laws, or (2) are used for any purpose prohibited by Export Laws, including, without limitation, nuclear, chemical, or biological weapons proliferation. This License and all related actions shall be governed by California law. 
+Fujitsu may audit Customer's use of the Programs. All terms of any Customer purchase order or other Customer ordering document shall be superseded by this License. 
+
+PROGRAM USE CERTIFICATE DEFINITIONS: 
+
+Concurrent Devices/Concurrent Accesses: the maximum number of input devices accessing the Programs at any given point in time. If multiplexing software or hardware (e.g., a TP monitor) is used, this number must be measured at the multiplexing front end. 
+
+Client: a computer which (1) is used by only one person at a time, and (2) executes Fujitsu software in local memory or stores the software on a local storage device. 
+
+User: an individual authorized by Customer to use the Programs, regardless of whether the individual is actively using the Programs at any given time. 

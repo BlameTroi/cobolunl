@@ -1,0 +1,53 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  Conditon.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  VARIABLES.
+           05  A              PIC X.
+           05  B              PIC X.
+           05  C              PIC X.
+           05  D              PIC X.
+           05  E              PIC X.
+           05  F              PIC X.
+           05  X              PIC X.
+           05  MO             PIC XX.
+           88  EVEN-MONTH VALUE '02' '04' '06' '08' '10' '12'.
+       PROCEDURE DIVISION.
+       0000-MAIN.
+           PERFORM 0100-IF-TEST
+               TEST AFTER
+               UNTIL A = 'Z'.
+           STOP RUN.
+       0100-IF-TEST.
+           DISPLAY 'ENTER VALUES ABCDEFXMO WITH A = Z TO QUIT'.
+           ACCEPT VARIABLES.
+           IF A NOT = 'Z'
+               DISPLAY 'VALUES ENTERED WERE: ' VARIABLES
+               PERFORM 0200-COMPARE.
+
+       0200-COMPARE.
+           IF ((D = E
+                AND (A > B
+                     OR (A < C
+                         AND A = F))))
+               DISPLAY 'D=E AND (A>B OR A<C AND A=F) IS TRUE'
+           ELSE
+               DISPLAY 'D=E AND (A>B OR A<C AND A=F) IS FALSE'.
+
+           IF (A = B
+                AND (NOT (X NUMERIC
+                          OR EVEN-MONTH)))
+               DISPLAY 'A=B AND NOT (X NUMERIC OR EVEN-MONTH) IS TRUE'
+           ELSE
+               DISPLAY 'A=B AND NOT (X NUMERIC OR EVEN-MONTH) IS FALSE'.
+
+           IF ((D = E
+                AND (A > B
+                     OR (A < C
+                         AND A = F)))
+              OR (A = B
+                  AND (NOT (X NUMERIC
+                            OR EVEN-MONTH))))
+               DISPLAY 'FULL STATEMENT TRUE'
+           ELSE
+               DISPLAY 'FULL STATEMENT FALSE'.

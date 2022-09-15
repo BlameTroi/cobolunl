@@ -1,0 +1,71 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  Comput.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  SIGNED-HANDICAP              PIC S999.
+       01  BOWLER-INFO.
+           05  GAME1                    PIC 999.
+           05  GAME2                    PIC 999.
+           05  GAME3                    PIC 999.
+           05  OLD-HANDICAP             PIC 999.
+           05  TOTAL-GAMES              PIC 999.
+           05  TOTAL-PINS               PIC 9(5).
+       01  NEW-BOWLER-INFO.
+           05  SERIES-SCORE             PIC 999.
+           05  AVERAGE-SCORE            PIC 999.
+           05  NEW-HANDICAP             PIC 999.
+           05  SERIES-WITH-HANDICAP     PIC 999.
+       01  BOWLER1 PIC X(20) VALUE '12518816500000000000'.
+       01  BOWLER2 PIC X(20) VALUE '17315618202401202045'.
+
+       PROCEDURE DIVISION.
+       0000-MAIN.
+           MOVE BOWLER1 TO BOWLER-INFO.
+      *    ACCEPT BOWLER-INFO.
+           IF TOTAL-GAMES = ZERO
+              PERFORM 0100-NEW-BOWLER.
+           IF TOTAL-GAMES NOT = ZERO
+              PERFORM 0200-REGULAR-BOWLER.
+           PERFORM 0300-DISPLAY-RESULTS.
+           MOVE BOWLER2 TO BOWLER-INFO.
+      *    ACCEPT BOWLER-INFO.
+           IF TOTAL-GAMES = ZERO
+              PERFORM 0100-NEW-BOWLER.
+           IF TOTAL-GAMES NOT = ZERO
+              PERFORM 0200-REGULAR-BOWLER.
+           PERFORM 0300-DISPLAY-RESULTS.
+           STOP RUN.
+
+       0100-NEW-BOWLER.
+           COMPUTE SERIES-SCORE TOTAL-PINS =
+              GAME1 + GAME2 + GAME3.
+           COMPUTE AVERAGE-SCORE = (GAME1 + GAME2 + GAME3) / 3.
+           COMPUTE SIGNED-HANDICAP OLD-HANDICAP NEW-HANDICAP =
+              (200 - AVERAGE-SCORE) * .8.
+      *       (200 - ((GAME1 + GAME2 + GAME3) / 3)) * .8.
+           IF SIGNED-HANDICAP < ZERO
+              MOVE ZERO TO OLD-HANDICAP NEW-HANDICAP.
+           MOVE 3 TO TOTAL-GAMES.
+
+       0200-REGULAR-BOWLER.
+           COMPUTE SERIES-SCORE = GAME1 + GAME2 + GAME3.
+           COMPUTE TOTAL-PINS = TOTAL-PINS + SERIES-SCORE.
+      *    ADD SERIES-SCORE TO TOTAL-PINS.
+           ADD 3 TO TOTAL-GAMES.
+           COMPUTE AVERAGE-SCORE = TOTAL-PINS / TOTAL-GAMES.
+      *    DIVIDE TOTAL-PINS BY TOTAL-GAMES GIVING AVERAGE-SCORE.
+           COMPUTE SIGNED-HANDICAP NEW-HANDICAP =
+               (200 - AVERAGE-SCORE) * .8.
+      *        (200 - TOTAL-PINS / TOTAL-GAMES) * .8.
+           IF SIGNED-HANDICAP < ZERO
+               MOVE ZERO TO NEW-HANDICAP.
+    
+       0300-DISPLAY-RESULTS.
+           ADD OLD-HANDICAP TO GAME1 GAME2 GAME3.
+           COMPUTE SERIES-WITH-HANDICAP =
+               SERIES-SCORE + OLD-HANDICAP * 3.
+           DISPLAY 'ACTUAL GAME1 GAME2 GAME3 SERIES TOTAL TOTAL  NEW '.
+           DISPLAY 'SERIES W HCP W HCP W HCP W HCP  GAMES  PINS  HCP '.
+           DISPLAY '  ' SERIES-SCORE '   ' GAME1 '   ' GAME2 '   ' GAME3
+               '    ' SERIES-WITH-HANDICAP '   ' TOTAL-GAMES '  '
+               TOTAL-PINS '  ' NEW-HANDICAP.

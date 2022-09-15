@@ -1,0 +1,369 @@
+      *RETRIEVAL                                                        00720002
+      *DMLIST                                                           00730000
+       IDENTIFICATION DIVISION.                                         00740000
+       PROGRAM-ID. EMPDEMO1.                                            00750001
+                                                                        00760000
+      *************************************************************     00770000
+      *  AUTHOR: NEAL WALTERS                                           00780002
+      *    DATE: APRIL 1998                                             00790002
+      * PURPOSE: COBOL/UNLEASHED - DEMO PROGRAM -                       00800002
+      *          SHOW HOW TO READ FLAT FILE AND CREATE A                00810004
+      *          SIMPLE "DISPLAY" REPORT FROM AN IDMS DATABASE.         00811004
+      *                                                                 00830003
+      *  INPUTS: SEQUENTIAL INPUT FILE //INPUT1                         00840002
+      *          CONTAINS A LIST OF EMPLOYEE-IDS (COLUMNS 1 TO 4).      00850002
+      *          PROGRAM WILL CALC ON EMPLOYEE-REC                      00860002
+      *          AND DISPLAY JOB HISTORY FOR EACH EMPLOYEE              00870002
+      *          (USING THE EMPOSITION AND JOB RECORDS).                00880002
+      *                                                                 00890003
+      *  NOTES:  1) SINCE THE PURPOSE OF THIS PROGRAM IS TO TEACH       00900003
+      *             IDMS CODING AND NOT REPORT-WRITING,                 00910003
+      *             ALL REPORTING WILL BE DONE WITH SIMPLE "DISPLAY"    00920003
+      *             STATEMENTS.  IN THE REAL WORLD, THE REPORT          00930004
+      *             WOULD PROBABLY BE CREATED BY OPENING AN             00931004
+      *             OUTPUT FILE AND USING "WRITE" STATEMENTS.           00932004
+      *************************************************************     00940000
+                                                                        00950000
+       ENVIRONMENT DIVISION.                                            00960000
+       CONFIGURATION SECTION.                                           00970000
+                                                                        00980000
+       INPUT-OUTPUT SECTION.                                            00990000
+                                                                        01000000
+       FILE-CONTROL.                                                    01010000
+           SELECT INPUT1-FILE ASSIGN TO INPUT1.                         01020000
+                                                                        01030000
+       IDMS-CONTROL SECTION.                                            01040000
+       PROTOCOL.    MODE IS BATCH DEBUG.                                01050000
+                    IDMS-RECORDS MANUAL.                                01060000
+                                                                        01070000
+      ***************************************************************   01080000
+       DATA DIVISION.                                                   01090000
+      ***************************************************************   01100000
+                                                                        01110000
+       FILE SECTION.                                                    01120000
+       FD  INPUT1-FILE                                                  01130000
+           RECORDING MODE IS F                                          01140003
+           LABEL RECORDS ARE STANDARD                                   01150003
+           BLOCK CONTAINS 0 RECORDS.                                    01160000
+       01  INPUT1-REC           PIC X(80).                              01170000
+                                                                        01180000
+                                                                        01190000
+       SCHEMA SECTION.                                                  01200000
+       DB EMPSS01 WITHIN EMPSCHM VERSION 100.                           01220002
+                                                                        01230000
+       WORKING-STORAGE SECTION.                                         01240000
+                                                                        01250000
+       COPY IDMS SUBSCHEMA-CONTROL.                                     01260000
+       COPY IDMS RECORD EMPLOYEE.                                       01270002
+       COPY IDMS RECORD EMPOSITION.                                     01280002
+       COPY IDMS RECORD JOB.                                            01290002
+       COPY IDMS DB-STATISTICS.                                         01300000
+                                                                        01310000
+      *************************************************                 01320000
+      *     WORK FIELDS, SWITCHES AND COUNTERS        *                 01330000
+      *************************************************                 01340000
+                                                                        01350000
+       01  WS-MISC.                                                     01360000
+           02  FILLER  PIC X(30) VALUE 'EMPDEMO1-WORKING-STORAGE'.      01370001
+                                                                        01380000
+           02  WS-DASHLINE             PIC X(80)      VALUE ALL '-'.    01390003
+           02  WS-IN-EMP-ID            PIC X(4)       VALUE SPACES.     01400003
+           02  WS-SELECT-COUNTER       PIC S9(8) COMP VALUE ZERO.       01410002
+           02  WS-DISPLAY-COUNTER      PIC S9(8) COMP VALUE ZERO.       01420002
+           02  WS-EMP-COUNTER          PIC S9(8) COMP VALUE ZERO.       01430003
+           02  WS-EMP-NF-COUNTER       PIC S9(8) COMP VALUE ZERO.       01440004
+           02  WS-EMPO-COUNTER         PIC S9(8) COMP VALUE ZERO.       01450003
+           02  WS-JOB-COUNTER          PIC S9(8) COMP VALUE ZERO.       01460003
+           02  WS-INPUT1-COUNTER       PIC S9(8) COMP VALUE ZERO.       01470000
+           02  WS-BUFFER-UTIL-RATIO    PIC S9(4) COMP VALUE ZERO.       01480000
+           02  WS-SHOW-RATIO           PIC ZZZ9.9.                      01490000
+           02  WS-SHOW-COUNT           PIC ZZ,ZZZ,ZZ9.                  01500004
+           02  WS-SHOW-DBKEY           PIC ZZ,ZZZ,ZZZ,ZZ9.              01510000
+           02  WS-SHOW-STAT-1          PIC ZZ,ZZZ,ZZZ,ZZ9.              01520000
+           02  WS-SHOW-STAT-2          PIC ZZ,ZZZ,ZZZ,ZZ9.              01530000
+           02  WS-SHOW-PAGE            PIC ZZ,ZZZ,ZZ9.                  01540000
+           02  WS-YN-INPUT1-EOF        PIC X     VALUE 'N'.             01550000
+           02  WS-YN-STORE-FINISHED    PIC X     VALUE 'N'.             01560000
+                                                                        01570000
+       01  WS-DATE-CC.                                                  01660000
+           02  WS-TODAY-CC             PIC 99.                          01670000
+           02  TODAYS-DATE.                                             01680000
+               03  TODAY-YY            PIC 99.                          01690000
+               03  TODAY-MM            PIC 99.                          01700000
+               03  TODAY-DD            PIC 99.                          01710000
+                                                                        01720000
+       01  WS-SHOW-DATE.                                                01730003
+           03  WS-SHOW-MM          PIC 99.                              01740003
+           03  FILLER              PIC X  VALUE '/'.                    01750003
+           03  WS-SHOW-DD          PIC 99.                              01760003
+           03  FILLER              PIC X  VALUE '/'.                    01770003
+           03  WS-SHOW-CC          PIC 99.                              01780003
+           03  WS-SHOW-YY          PIC 99.                              01790003
+                                                                        01800003
+       01  DATA-LINE-01.                                                01810003
+           03  FILLER              PIC X(10)  VALUE ' '.                01820003
+           03  FILLER              PIC X(05)  VALUE '__'.               01830003
+           03  DL01-START-DATE     PIC X(11).                           01840003
+           03  FILLER              PIC X  VALUE ' '.                    01850003
+           03  DL01-FINISH-DATE    PIC X(11).                           01860003
+           03  FILLER              PIC X  VALUE ' '.                    01870003
+           03  DL01-SALARY-GRADE   PIC 99.                              01880003
+           03  FILLER              PIC X  VALUE ' '.                    01890003
+           03  DL01-JOB-TITLE      PIC X(40).                           01900003
+                                                                        01910003
+       01  TODAYS-TIME.                                                 01920000
+           02  TODAY-HH                PIC 99.                          01930000
+           02  TODAY-MIN               PIC 99.                          01940000
+           02  TODAY-SS                PIC 99.                          01950000
+                                                                        01960000
+       01  DBKEY-GROUP.                                                 01980000
+           02  LINK-DBKEY          PIC S9(8) COMP.                      01990000
+           02  LINK-DBKEY-A REDEFINES LINK-DBKEY                        02000000
+                                   PIC X(4).                            02010000
+           02  LINK-NUMERIC-PAGE   PIC 9(10).                           02020000
+           02  LINK-PAGE-AND-LINE.                                      02030000
+               03  LINK-PL-PAGE         PIC ZZ,ZZZ,ZZ9.                 02040000
+               03  LINK-PL-COLON        PIC X.                          02050000
+               03  LINK-PL-LINE         PIC 999.                        02060000
+                                                                        02070000
+                                                                        02080000
+       LINKAGE SECTION.                                                 02090000
+       01  LINKAGE-PARMS.                                               02100000
+           02  LINKAGE-LENGTH          PIC S9(4) COMP.                  02110000
+           02  LINKAGE-GROUP.                                           02120000
+               03  WS-YN-TRACE         PIC X.                           02130000
+                                                                        02140000
+      *****************************************************             02150000
+       PROCEDURE DIVISION USING LINKAGE-PARMS.                          02160000
+      *****************************************************             02170000
+       0000-MAIN-PROGRAM.                                               02180000
+                                                                        02190000
+           PERFORM  0500-INITIALIZE  THRU  0500-EXIT.                   02200000
+      * OPEN AND CLOSE OUTPUT FILES SERIALLY,                           02210000
+      * WE WANT TO WRITE OUTPUT TO THE SAME PDS (DIFFERENT MBRS)        02220000
+      * SINCE FILE IS PROBABLY TAPE, BETTER TO RESET INITIAL TIME       02230000
+      * BASED ON SUCCESSFUL OPEN OF FILE                                02240000
+           MOVE 'N' TO WS-YN-INPUT1-EOF                                 02250002
+           OPEN INPUT INPUT1-FILE                                       02260003
+           PERFORM 1000-READ-INPUT1 THRU 1000-EXIT                      02270002
+              UNTIL WS-YN-INPUT1-EOF = 'Y'                              02280002
+           CLOSE INPUT1-FILE                                            02290003
+                                                                        02300000
+      * END OF SET INFO TO OUT2, NOW REC INFO TO OUT1                   02310000
+                                                                        02320000
+           DISPLAY '                                         '.         02330000
+           DISPLAY '---------- FINAL STATISTICS ----------------'.      02340000
+           DISPLAY '                                         '.         02350000
+           DISPLAY ' NUMBER OF INPUTS= ' WS-INPUT1-COUNTER              02360002
+           DISPLAY ' '                                                  02370003
+           DISPLAY ' NUMBER OF RECORDS BY RECORD-TYPE:'                 02380003
+           MOVE WS-EMP-COUNTER TO WS-SHOW-COUNT                         02390004
+           DISPLAY '             EMPLOYEE = ' WS-SHOW-COUNT             02400004
+           MOVE WS-EMPO-COUNTER TO WS-SHOW-COUNT                        02410004
+           DISPLAY '           EMPOSITION = ' WS-SHOW-COUNT             02420004
+           MOVE WS-JOB-COUNTER TO WS-SHOW-COUNT                         02430004
+           DISPLAY '                  JOB = ' WS-SHOW-COUNT             02440004
+           MOVE WS-EMP-NF-COUNTER TO WS-SHOW-COUNT                      02450004
+           DISPLAY '  EMPLOYEES NOT FOUND = ' WS-SHOW-COUNT             02460004
+           DISPLAY ' '                                                  02470003
+                                                                        02480000
+           PERFORM 9000-WRAP-UP     THRU 9000-EXIT.                     02490000
+                                                                        02500000
+           GOBACK.                                                      02510000
+                                                                        02520000
+      *******************************************************           02530000
+      * OPEN FILES AND GET OOAK AND DESIRED SCHEMA          *           02540000
+      *******************************************************           02550000
+       0500-INITIALIZE.                                                 02560000
+                                                                        02570000
+           ACCEPT TODAYS-DATE FROM DATE.                                02580000
+           ACCEPT TODAYS-TIME FROM TIME.                                02590000
+           DISPLAY 'START: EMPDEMO1 - SHOW EMPLOYEE JOB HISTORY '       02600002
+           DISPLAY 'DATE = ' TODAYS-DATE                                02610000
+                   ' TIME = ' TODAYS-TIME.                              02620000
+                                                                        02630000
+           COPY IDMS SUBSCHEMA-BINDS.                                   02640000
+           READY EMP-DEMO-REGION USAGE-MODE RETRIEVAL.                  02650002
+           PERFORM IDMS-STATUS.                                         02660002
+           READY ORG-DEMO-REGION USAGE-MODE RETRIEVAL.                  02670003
+           PERFORM IDMS-STATUS.                                         02680003
+       0500-EXIT.                                                       02690000
+           EXIT.                                                        02700000
+                                                                        02710000
+       1000-READ-INPUT1.                                                02720002
+            READ INPUT1-FILE INTO WS-IN-EMP-ID                          02730002
+                 AT END MOVE 'Y' TO WS-YN-INPUT1-EOF                    02740002
+                        GO TO 1000-EXIT                                 02750002
+            END-READ                                                    02760002
+            ADD 1 TO WS-INPUT1-COUNTER                                  02770002
+            PERFORM 2000-OBTAIN-CALC-EMPLOYEE THRU 2000-EXIT            02780003
+            .                                                           02790002
+       1000-EXIT.                                                       02800002
+           EXIT.                                                        02810002
+                                                                        02820002
+       2000-OBTAIN-CALC-EMPLOYEE.                                       02830002
+           MOVE WS-IN-EMP-ID TO EMP-ID-0415.                            02840002
+           OBTAIN CALC EMPLOYEE                                         02850002
+           IF DB-REC-NOT-FOUND                                          02860000
+              PERFORM 2010-EMP-NOT-FOUND THRU 2010-EXIT                 02870002
+              ADD 1 TO WS-EMP-NF-COUNTER                                02880004
+           ELSE                                                         02890000
+              PERFORM IDMS-STATUS                                       02900000
+              PERFORM 2020-EMP-FOUND THRU 2020-EXIT                     02910002
+              ADD 1 TO WS-EMP-COUNTER                                   02920004
+           END-IF                                                       02930000
+           .                                                            02940000
+       2000-EXIT.                                                       02950002
+           EXIT.                                                        02960000
+                                                                        02970000
+       2010-EMP-NOT-FOUND.                                              02980002
+            DISPLAY 'EMP-NUM=' EMP-ID-0415 ' NOT FOUND '.               02990002
+       2010-EXIT.                                                       03000002
+           EXIT.                                                        03010000
+                                                                        03020000
+       2020-EMP-FOUND.                                                  03030002
+           DISPLAY ' '                                                  03040004
+           DISPLAY WS-DASHLINE                                          03041004
+           DISPLAY '         EMP-ID = ' EMP-ID-0415                     03050003
+           DISPLAY 'LAST/FIRST NAME = ' EMP-LAST-NAME-0415              03060003
+                                   ' '  EMP-FIRST-NAME-0415             03070003
+           DISPLAY '           CITY = ' EMP-CITY-0415                   03080003
+                             ' STATE='  EMP-STATE-0415                  03090003
+           DISPLAY ' '                                                  03100003
+           .                                                            03110002
+           PERFORM 2021-NEXT-EMPOSITION THRU 2021-EXIT                  03120003
+              UNTIL ANY-ERROR-STATUS                                    03130003
+              .                                                         03140003
+       2020-EXIT.                                                       03150002
+           EXIT.                                                        03160000
+                                                                        03170000
+       2021-NEXT-EMPOSITION.                                            03180003
+           OBTAIN NEXT EMPOSITION WITHIN EMP-EMPOSITION                 03190003
+           IF DB-END-OF-SET                                             03200003
+              GO TO 2021-EXIT                                           03210003
+           END-IF                                                       03220003
+           PERFORM IDMS-STATUS                                          03230003
+           ADD 1 TO WS-EMPO-COUNTER                                     03240003
+           IF JOB-EMPOSITION MEMBER                                     03250003
+              OBTAIN OWNER WITHIN JOB-EMPOSITION                        03260003
+              PERFORM IDMS-STATUS                                       03270003
+              ADD 1 TO WS-JOB-COUNTER                                   03280003
+              PERFORM 2100-DISPLAY-JOBINFO THRU 2100-EXIT               03290003
+           ELSE                                                         03300003
+              DISPLAY 'EMPOSITION RECORD NOT TIED TO ANY JOB '          03310003
+           END-IF                                                       03320003
+           .                                                            03330003
+       2021-EXIT.                                                       03340003
+           EXIT.                                                        03350003
+                                                                        03360003
+       2100-DISPLAY-JOBINFO.                                            03370003
+      * DATABASE IS NOT YEAR 2000 COMPLIANT                             03380003
+      * SO CREATE A CENTURY                                             03390003
+           IF START-YEAR-0420 < '50'                                    03400003
+              MOVE '20' TO WS-SHOW-CC                                   03410003
+           ELSE                                                         03420003
+              MOVE '19' TO WS-SHOW-CC                                   03430003
+           END-IF                                                       03440003
+           MOVE START-YEAR-0420  TO WS-SHOW-YY                          03450003
+           MOVE START-MONTH-0420 TO WS-SHOW-MM                          03460003
+           MOVE START-DAY-0420   TO WS-SHOW-DD                          03470003
+           MOVE WS-SHOW-DATE TO DL01-START-DATE                         03480003
+           .                                                            03490003
+           IF FINISH-DATE-0420 = '000000'                               03500003
+              MOVE ' ACTIVE ' TO DL01-FINISH-DATE                       03510003
+           ELSE                                                         03520003
+              IF FINISH-YEAR-0420 < '50'                                03530003
+                 MOVE '20' TO WS-SHOW-CC                                03540003
+              ELSE                                                      03550003
+                 MOVE '19' TO WS-SHOW-CC                                03560003
+              END-IF                                                    03570003
+              MOVE FINISH-YEAR-0420 TO WS-SHOW-YY                       03580003
+              MOVE FINISH-MONTH-0420 TO WS-SHOW-MM                      03590003
+              MOVE FINISH-DAY-0420  TO WS-SHOW-DD                       03600003
+              MOVE WS-SHOW-DATE TO DL01-FINISH-DATE                     03610003
+           END-IF                                                       03620003
+                                                                        03630003
+           MOVE SALARY-GRADE-0420 TO DL01-SALARY-GRADE                  03640003
+      * NOTE THAT THE ABOVE FIELDS COME FROM THE "EMPOSITION" RECORD    03650003
+      * AND THAT "TITLE" COMES FROM THE "JOB" RECORD                    03660003
+           MOVE TITLE-0440       TO DL01-JOB-TITLE                      03670003
+           DISPLAY DATA-LINE-01                                         03680003
+           .                                                            03690003
+       2100-EXIT.                                                       03700003
+           EXIT.                                                        03710003
+                                                                        03720003
+      ******************************************************            03730000
+      * FINISH & DISPLAY COUNTS                                         03740000
+      ******************************************************            03750000
+       9000-WRAP-UP.                                                    03760000
+                                                                        03770000
+                                                                        03780000
+           ACCEPT TODAYS-DATE FROM DATE.                                03790000
+           ACCEPT TODAYS-TIME FROM TIME.                                03800000
+           DISPLAY SPACES.                                              03810000
+           DISPLAY 'DATE = ' TODAYS-DATE.                               03820000
+           DISPLAY 'TIME = ' TODAYS-TIME.                               03830000
+           DISPLAY SPACES.                                              03840000
+           DISPLAY '                                          '.        03850000
+           PERFORM 9100-STATISTICS THRU 9100-EXIT                       03860000
+           .                                                            03870000
+           FINISH                                                       03880004
+           PERFORM IDMS-STATUS                                          03890004
+           .                                                            03900004
+       9000-EXIT.                                                       03910000
+           EXIT.                                                        03920000
+                                                                        03930000
+                                                                        03940000
+       9100-STATISTICS.                                                 03950000
+           DISPLAY '***********************************************'    03960000
+                   '***********************************************'    03970000
+                                                                        03980000
+           ACCEPT DB-STATISTICS FROM IDMS-STATISTICS.                   03990000
+           PERFORM IDMS-STATUS                                          04000003
+                                                                        04010000
+           MOVE PAGES-READ      TO WS-SHOW-STAT-1                       04020000
+           MOVE PAGES-REQUESTED TO WS-SHOW-STAT-2                       04030000
+           DISPLAY '        PAGES-READ=' WS-SHOW-STAT-1                 04040000
+                   '   PAGES-REQUESTED=' WS-SHOW-STAT-2                 04050000
+                                                                        04060000
+           MOVE PAGES-READ TO WS-SHOW-STAT-1                            04070000
+           IF PAGES-READ > 0                                            04080000
+              COMPUTE WS-BUFFER-UTIL-RATIO =                            04090000
+                       PAGES-REQUESTED / PAGES-READ                     04100000
+           ELSE                                                         04110000
+              MOVE ZERO TO WS-BUFFER-UTIL-RATIO                         04120000
+              .                                                         04130000
+           MOVE WS-BUFFER-UTIL-RATIO TO WS-SHOW-RATIO                   04140000
+           DISPLAY '     PAGES-WRITTEN=' WS-SHOW-STAT-1                 04150000
+                   ' BUFFER-UTIL-RATIO=        ' WS-SHOW-RATIO          04160000
+                                                                        04170000
+           MOVE CALC-TARGET     TO WS-SHOW-STAT-1                       04180000
+           MOVE CALC-OVERFLOW   TO WS-SHOW-STAT-2                       04190000
+           DISPLAY '       CALC-TARGET=' WS-SHOW-STAT-1                 04200000
+                   '     CALC-OVERFLOW=' WS-SHOW-STAT-2                 04210000
+                                                                        04220000
+           MOVE VIA-TARGET      TO WS-SHOW-STAT-1                       04230000
+           MOVE VIA-OVERFLOW    TO WS-SHOW-STAT-2                       04240000
+           DISPLAY '        VIA-TARGET=' WS-SHOW-STAT-1                 04250000
+                   '      VIA-OVERFLOW=' WS-SHOW-STAT-2                 04260000
+                                                                        04270000
+           MOVE LINES-REQUESTED TO WS-SHOW-STAT-1                       04280000
+           MOVE CALLS-TO-IDMS   TO WS-SHOW-STAT-2                       04290000
+           DISPLAY '   LINES-REQUESTED=' WS-SHOW-STAT-1                 04300000
+                   '     CALLS-TO-IDMS=' WS-SHOW-STAT-2                 04310000
+                                                                        04320000
+           MOVE FRAGMENTS-STORED  TO WS-SHOW-STAT-1                     04330000
+           MOVE RECS-RELOCATED    TO WS-SHOW-STAT-2                     04340000
+           DISPLAY '  FRAGMENTS-STORED=' WS-SHOW-STAT-1                 04350000
+                   '    RECS-RELOCATED=' WS-SHOW-STAT-2                 04360000
+                                                                        04370000
+           DISPLAY '***********************************************'    04380000
+                   '***********************************************'    04390000
+           DISPLAY '                                          '.        04400000
+       9100-EXIT.                                                       04410000
+           EXIT.                                                        04420000
+                                                                        04430000
+       COPY IDMS IDMS-STATUS.                                           04440000
+       IDMS-ABORT SECTION.                                              04450000
+       IDMS-ABORT-EXIT.                                                 04460000
+           EXIT.                                                        04470000

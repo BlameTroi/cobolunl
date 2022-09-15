@@ -1,0 +1,137 @@
+ IDENTIFICATION DIVISION.
+ ENVIRONMENT DIVISION.
+ CONFIGURATION SECTION.
+ INPUT-OUTPUT SECTION.
+ FILE-CONTROL.
+     SELECT INPUT-FILE       ASSIGN TO DISK
+                             ORGANIZATION IS SEQUENTIAL.
+     SELECT PRINT-FILE       ASSIGN TO PRINTER.
+ DATA DIVISION.
+ FILE SECTION.
+
+ FD  INPUT-FILE
+     VALUE OF FILE-ID IS "REPORT.DAT".
+ 01  INPUT-RECORD.
+     03  INPUT-NAME              PIC  X(30).
+     03  INPUT-ADDR-1            PIC  X(30).
+     03  INPUT-ADDR-2            PIC  X(30).
+     03  INPUT-PHONE             PIC  X(16).
+
+ FD  PRINT-FILE.
+ 01  PRINT-RECORD                PIC  X(80).
+ 01  PRINT-LINE-1.
+     03  PL1-NAME                PIC  X(30).
+     03      FILLER              PIC  X(01).
+     03  PL1-ADDR-1              PIC  X(30).
+     03      FILLER              PIC  X(01).
+     03  PL1-PHONE               PIC  X(16).
+ 01  PRINT-LINE-2.
+     03      FILLER              PIC  X(31).
+     03  PL2-ADDR-2              PIC  X(30).
+ 01  PRINT-TOTAL-LINE.
+     03      FILLER              PIC  X(10).
+     03  PTL-REC-COUNT           PIC  ZZZ,ZZ9.
+     03  PTL-TOTAL-TEXT          PIC  X(16).
+
+ WORKING-STORAGE SECTION.
+ 77  WS-END-FLAG                 PIC  9(01)      VALUE 0.
+ 77  WS-REC-COUNT                PIC  9(06) COMP VALUE 0.
+ 77  WS-MAX-LINES                PIC  9(03) COMP VALUE 57.
+ 77  WS-LINE-COUNT               PIC  9(03) COMP VALUE 0.
+ 77  WS-PAGE-COUNT               PIC  9(03) COMP VALUE 0.
+
+ 01  DATE-WORK-AREA.
+     03  DWA-CURRENT-DATE.
+         05  DWA-YEAR            PIC  9(04).
+         05  DWA-MONTH           PIC  9(02).
+         05  DWA-DAY             PIC  9(02).
+         05  DWA-HOUR            PIC  9(02).
+         05  DWA-MINUTE          PIC  9(02).
+         05  DWA-SECOND          PIC  99V99.
+         05  DWA-GREENWICH-DIFF  PIC  X(01).
+         05  DWA-DIFF-HOURS      PIC  9(02).
+         05  DWA-DIFF-MINUTES    PIC  9(02).
+     03  DWA-TODAYS-DATE         PIC  9(08).
+     03  DWA-TODAYS-DATE-R       REDEFINES DWA-TODAYS-DATE.
+         05  DWA-MM                  PIC  9(02).
+         05  DWA-DD                  PIC  9(02).
+         05  DWA-YYYY                PIC  9(04).
+
+ 01  PAGE-HEADER-1.
+     03      FILLER              PIC  X(05) VALUE "Page ".
+     03  PH1-RUN-DATE            PIC  99/99/9999.
+     03      FILLER              PIC  X(59) VALUE
+         "              S A M P L E   R E P O R T               Pa
+-        "ge ".
+     03  PH1-PAGE-NBR            PIC  ZZZ9.
+ 01  PAGE-HEADER-2.
+     03      FILLER              PIC  X(78) VALUE
+         "NAME-------------------------- ADDRESS------------------
+-        "----- PHONE NUMBER----".
+
+ PROCEDURE DIVISION.
+
+ 000000-CONTROL.
+     PERFORM 000100-INITIALIZE.
+     PERFORM 000200-PROCESS
+         UNTIL (WS-END-FLAG = 1).
+     PERFORM 000300-TERMINATE.
+     STOP RUN.
+
+ 000100-INITIALIZE.
+     OPEN INPUT  INPUT-FILE
+          OUTPUT PRINT-FILE.
+
+     MOVE FUNCTION CURRENT-DATE TO DWA-CURRENT-DATE.
+     MOVE DWA-YEAR  TO DWA-YYYY.
+     MOVE DWA-MONTH TO DWA-MM.
+     MOVE DWA-DAY   TO DWA-DD.
+     MOVE DWA-TODAYS-DATE TO PH1-RUN-DATE.
+     PERFORM 000210-PAGE-HEADING.
+
+     READ INPUT-FILE
+         AT END
+             MOVE 1 TO WS-END-FLAG
+     END-READ.
+
+ 000200-PROCESS.
+     IF (WS-LINE-COUNT > WS-MAX-LINES)
+         PERFORM 000210-PAGE-HEADING.
+
+     MOVE INPUT-NAME   TO PL1-NAME.
+     MOVE INPUT-ADDR-1 TO PL1-ADDR-1.
+     MOVE INPUT-PHONE  TO PL1-PHONE.
+     WRITE PRINT-RECORD BEFORE 1.
+     MOVE SPACES TO PRINT-RECORD.
+
+     MOVE INPUT-ADDR-2 TO PL2-ADDR-2.
+     WRITE PRINT-RECORD BEFORE 2.
+     MOVE SPACES TO PRINT-RECORD.
+     ADD 3 TO WS-LINE-COUNT.
+
+     ADD 1 TO WS-REC-COUNT.
+     READ INPUT-FILE
+         AT END
+             MOVE 1 TO WS-END-FLAG
+     END-READ.
+
+ 000210-PAGE-HEADING.
+     IF (WS-LINE-COUNT > ZERO)
+         WRITE PRINT-RECORD BEFORE PAGE.
+
+     ADD 1 TO WS-PAGE-COUNT.
+     MOVE WS-PAGE-COUNT TO PH1-PAGE-NBR.
+     WRITE PRINT-RECORD FROM PAGE-HEADER-1 BEFORE 2.
+     MOVE SPACES TO PRINT-RECORD.
+
+     WRITE PRINT-RECORD FROM PAGE-HEADER-2 BEFORE 2.
+     MOVE SPACES TO PRINT-RECORD.
+     MOVE 5 TO WS-LINE-COUNT.
+
+ 000300-TERMINATE.
+     MOVE WS-REC-COUNT        TO PTL-REC-COUNT.
+     MOVE " records printed"  TO PTL-TOTAL-TEXT.
+     WRITE PRINT-RECORD BEFORE PAGE.
+
+     CLOSE INPUT-FILE
+           PRINT-FILE.

@@ -1,0 +1,16 @@
+        1000-OBTAIN-EMPLOYEE.
+            MOVE '123456789' TO EMPLOYEE-NUM
+       *    OBTAIN CALC EMPLOYEE-REC
+       *    ON DB-REC-NOT-FOUND
+          MOVE 4 TO DML-SEQUENCE
+                  CALL 'IDMS' USING SUBSCHEMA-CTRL
+                          IDBMSCOM (32)
+                          SR2001
+                          IDBMSCOM (43)
+                  IF NOT DB-REC-NOT-FOUND PERFORM IDMS-STATUS;
+                  ELSE
+               PERFORM 1100-EMP-NOT-FOUND THRU 1100-EXIT
+            .
+            PERFORM 1200-EMP-FOUND THRU 1200-EXIT
+                    .
+        1000-EXIT. EXIT.

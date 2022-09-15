@@ -1,0 +1,30 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. Uperfrst.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  UPPER-CASE PIC X(26) VALUE 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.
+       01  LOWER-CASE PIC X(26) VALUE 'abcdefghijklmnopqrstuvwxyz'.
+       01  INPUT-FIELD          PIC X(80).
+       01  CHAR-NR              PIC 99.
+       01  FIELD-SIZE           PIC 99 VALUE 80.
+       PROCEDURE DIVISION.
+       0000-DEMO-PARAGRAPH.
+           ACCEPT INPUT-FIELD.
+           INSPECT INPUT-FIELD CONVERTING UPPER-CASE TO LOWER-CASE.
+           MOVE 1 TO CHAR-NR.
+           INSPECT INPUT-FIELD TALLYING CHAR-NR FOR LEADING SPACES.
+           PERFORM
+               UNTIL CHAR-NR > FIELD-SIZE
+                 INSPECT INPUT-FIELD (CHAR-NR:1) 
+                   CONVERTING LOWER-CASE TO UPPER-CASE
+                 INSPECT INPUT-FIELD (CHAR-NR: ) 
+                   TALLYING CHAR-NR FOR CHARACTERS
+                   BEFORE ' '
+                 IF CHAR-NR NOT > FIELD-SIZE
+                   INSPECT INPUT-FIELD (CHAR-NR: ) 
+                     TALLYING CHAR-NR FOR LEADING SPACES
+                 END-IF
+           END-PERFORM.
+           DISPLAY INPUT-FIELD.
+           STOP RUN.
+

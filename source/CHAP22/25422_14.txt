@@ -1,0 +1,40 @@
+*COPY IDMS IDMS-STATUS.
+ ******************************************************************
+  IDMS-STATUS.
+ ************************ V 33 BATCH-AUTOSTATUS *******************
+ *IDMS-STATUS-PARAGRAPH.
+          IF NOT DB-STATUS-OK
+              PERFORM IDMS-ABORT
+              DISPLAY '**************************'
+                      ' ABORTING - ' PROGRAM-NAME
+                      ', '           ERROR-STATUS
+                      ', '           ERROR-RECORD
+                      ' **** RECOVER IDMS ****'
+                      UPON CONSOLE
+              DISPLAY 'PROGRAM NAME ------ ' PROGRAM-NAME
+              DISPLAY 'ERROR STATUS ------ ' ERROR-STATUS
+              DISPLAY 'ERROR RECORD ------ ' ERROR-RECORD
+              DISPLAY 'ERROR SET --------- ' ERROR-SET
+              DISPLAY 'ERROR AREA -------- ' ERROR-AREA
+              DISPLAY 'LAST GOOD RECORD -- ' RRECORD-NAME
+              DISPLAY 'LAST GOOD AREA ---- ' AREA-NAME
+              DISPLAY 'DML SEQUENCE--------' DML-SEQUENCE
+* IN-HOUSE CUSTOMIZATION - CHANGED "ROLLBACK"
+* TO A HARD-CODED CALL - TO AVOID "AUTOSTATUS"
+* ADDING A "PERFORM IDMS-STATUS" AFTER THE ROLLBACK COMMAND
+* AND THUS CREATING AN ENDLESS LOOP IN THIS PARAGRAPH
+* (WHICH WOULD NOW FLOOD THE CONSOLE WITH THE IDMSERR1 MESSAGES).
+*            ROLLBACK
+             CALL 'IDMS' USING SUBSCHEMA-CTRL
+                 IDBMSCOM (67)
+             IF ANY-ERROR-STATUS
+                DISPLAY 'ROLLBACK FAILED WITH STATUS='
+                         ERROR-STATUS
+               DISPLAY 'ROLLBACK FAILED WITH STATUS='
+                        ERROR-STATUS UPON CONSOLE
+            END-IF
+            CALL 'ABORT'
+            .
+IDMS-ABORT SECTION.
+IDMS-ABORT-EXIT.
+    EXIT.

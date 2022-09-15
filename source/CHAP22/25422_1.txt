@@ -1,0 +1,11 @@
+        1000-OBTAIN-EMPLOYEE.
+            MOVE '123456789' TO EMPLOYEE-NUM
+            OBTAIN CALC EMPLOYEE-REC
+            IF DB-REC-NOT-FOUND
+               PERFORM 1100-EMP-NOT-FOUND THRU 1100-EXIT
+            ELSE
+               PERFORM IDMS-STATUS
+               PERFORM 1200-EMP-FOUND THRU 1200-EXIT
+            END-IF
+            .
+        1000-EXIT. EXIT.

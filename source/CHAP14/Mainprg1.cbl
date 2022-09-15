@@ -1,0 +1,9 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  MAINPRG1.
+
+       PROCEDURE DIVISION.
+       0100-MAIN.
+           DISPLAY 'BEGIN MAIN PROGRAM'.
+           CALL 'SUBPRG1'.
+           DISPLAY 'END OF MAIN PROGRAM'.
+           STOP RUN.

@@ -1,0 +1,277 @@
+      *RETRIEVAL                                                        00730000
+      *DMLIST                                                           00740000
+       IDENTIFICATION DIVISION.                                         00750000
+       PROGRAM-ID. EMPDEMO3.                                            00760002
+                                                                        00770000
+      *************************************************************     00780000
+      *  AUTHOR: NEAL WALTERS                                           00790000
+      *    DATE: APRIL 1998                                             00800000
+      * PURPOSE: COBOL/UNLEASHED - DEMO PROGRAM -                       00810000
+      *          SHOW HOW TO READ FLAT FILE AND STORE                   00820000
+      *          SAMPLE EMPLOYEE RECORDS INTO THE EMPLOYEE DATABASE.    00830000
+      *                                                                 00840000
+      *  LOGIC:  1) SWEEP AREA FOR EMPLOYEE RECORDS.                    00900001
+      *          2) DELETE ARE RECORDS WITH EMP-ID FROM 1000 TO 2000    00910001
+      *          3) RESET COUNTER IN COMMIT1-FILE BACK TO ZERO          00920003
+      *                                                                 00950000
+      *************************************************************     01020000
+                                                                        01030000
+       ENVIRONMENT DIVISION.                                            01040000
+       CONFIGURATION SECTION.                                           01050000
+                                                                        01060000
+       INPUT-OUTPUT SECTION.                                            01070000
+       FILE-CONTROL.                                                    01071004
+           SELECT COMMIT1-FILE ASSIGN TO COMMIT1.                       01073004
+                                                                        01080000
+                                                                        01090000
+       IDMS-CONTROL SECTION.                                            01100000
+       PROTOCOL.    MODE IS BATCH DEBUG.                                01110000
+                    IDMS-RECORDS MANUAL.                                01120000
+                                                                        01130000
+      ***************************************************************   01140000
+       DATA DIVISION.                                                   01150000
+      ***************************************************************   01160000
+                                                                        01170000
+       FILE SECTION.                                                    01180000
+       FD  COMMIT1-FILE                                                 01181005
+           RECORDING MODE IS F                                          01182005
+           LABEL RECORDS ARE STANDARD                                   01183005
+           BLOCK CONTAINS 0 RECORDS.                                    01184005
+       01  COMMIT1-REC.                                                 01185005
+           03 COMMIT1-UPDATE-COUNTER PIC 9(4).                          01186005
+           03 FILLER                 PIC X(76).                         01187005
+                                                                        01188005
+       SCHEMA SECTION.                                                  01190000
+       DB EMPSS01 WITHIN EMPSCHM VERSION 100.                           01200000
+                                                                        01210000
+       WORKING-STORAGE SECTION.                                         01220000
+                                                                        01230000
+       COPY IDMS SUBSCHEMA-CONTROL.                                     01240000
+       COPY IDMS RECORD EMPLOYEE.                                       01250000
+       COPY IDMS DB-STATISTICS.                                         01260000
+                                                                        01270000
+      *************************************************                 01280000
+      *     WORK FIELDS, SWITCHES AND COUNTERS        *                 01290000
+      *************************************************                 01300000
+                                                                        01310000
+       01  WS-MISC.                                                     01320000
+           02  FILLER  PIC X(30) VALUE 'EMPDEMO3-WORKING-STORAGE'.      01330002
+                                                                        01340000
+           02  WS-DASHLINE             PIC X(80)      VALUE ALL '-'.    01350000
+           02  WS-EMP-READ-COUNTER     PIC S9(8) COMP VALUE ZERO.       01360001
+           02  WS-EMP-ERASE-COUNTER    PIC S9(8) COMP VALUE ZERO.       01370001
+           02  WS-BUFFER-UTIL-RATIO    PIC S9(4) COMP VALUE ZERO.       01380000
+           02  WS-SHOW-RATIO           PIC ZZZ9.9.                      01390000
+           02  WS-SHOW-COUNT           PIC ZZ,ZZZ,ZZ9.                  01400000
+           02  WS-SHOW-DBKEY           PIC ZZ,ZZZ,ZZZ,ZZ9.              01410000
+           02  WS-SHOW-STAT-1          PIC ZZ,ZZZ,ZZZ,ZZ9.              01420000
+           02  WS-SHOW-STAT-2          PIC ZZ,ZZZ,ZZZ,ZZ9.              01430000
+           02  WS-SHOW-PAGE            PIC ZZ,ZZZ,ZZ9.                  01440000
+                                                                        01470000
+       01  WS-DATE-CC.                                                  01480000
+           02  WS-TODAY-CC             PIC 99.                          01490000
+           02  TODAYS-DATE.                                             01500000
+               03  TODAY-YY            PIC 99.                          01510000
+               03  TODAY-MM            PIC 99.                          01520000
+               03  TODAY-DD            PIC 99.                          01530000
+                                                                        01540000
+       01  WS-SHOW-DATE.                                                01550000
+           03  WS-SHOW-MM          PIC 99.                              01560000
+           03  FILLER              PIC X  VALUE '/'.                    01570000
+           03  WS-SHOW-DD          PIC 99.                              01580000
+           03  FILLER              PIC X  VALUE '/'.                    01590000
+           03  WS-SHOW-CC          PIC 99.                              01600000
+           03  WS-SHOW-YY          PIC 99.                              01610000
+                                                                        01620000
+       01  DATA-LINE-01.                                                01630000
+           03  FILLER              PIC X(10)  VALUE ' '.                01640000
+           03  FILLER              PIC X(05)  VALUE '__'.               01650000
+           03  DL01-START-DATE     PIC X(11).                           01660000
+           03  FILLER              PIC X  VALUE ' '.                    01670000
+           03  DL01-FINISH-DATE    PIC X(11).                           01680000
+           03  FILLER              PIC X  VALUE ' '.                    01690000
+           03  DL01-SALARY-GRADE   PIC 99.                              01700000
+           03  FILLER              PIC X  VALUE ' '.                    01710000
+           03  DL01-JOB-TITLE      PIC X(40).                           01720000
+                                                                        01730000
+       01  TODAYS-TIME.                                                 01740000
+           02  TODAY-HH                PIC 99.                          01750000
+           02  TODAY-MIN               PIC 99.                          01760000
+           02  TODAY-SS                PIC 99.                          01770000
+                                                                        01780000
+       01  DBKEY-GROUP.                                                 01790000
+           02  LINK-DBKEY          PIC S9(8) COMP.                      01800000
+           02  LINK-DBKEY-A REDEFINES LINK-DBKEY                        01810000
+                                   PIC X(4).                            01820000
+           02  LINK-NUMERIC-PAGE   PIC 9(10).                           01830000
+           02  LINK-PAGE-AND-LINE.                                      01840000
+               03  LINK-PL-PAGE         PIC ZZ,ZZZ,ZZ9.                 01850000
+               03  LINK-PL-COLON        PIC X.                          01860000
+               03  LINK-PL-LINE         PIC 999.                        01870000
+                                                                        01880000
+                                                                        01890000
+       LINKAGE SECTION.                                                 01900000
+       01  LINKAGE-PARMS.                                               01910000
+           02  LINKAGE-LENGTH          PIC S9(4) COMP.                  01920000
+           02  LINKAGE-GROUP.                                           01930000
+               03  WS-YN-TRACE         PIC X.                           01940000
+               03  WS-YN-COMMA         PIC X.                           01950000
+               03  WS-YN-CLEANUP       PIC X(6).                        01960000
+                                                                        01970000
+      *****************************************************             01980000
+       PROCEDURE DIVISION USING LINKAGE-PARMS.                          01990000
+      *****************************************************             02000000
+       0000-MAIN-PROGRAM.                                               02010000
+                                                                        02020000
+           PERFORM 0500-INITIALIZE           THRU 0500-EXIT             02030006
+           PERFORM 0600-ZERO-OUT-COMMIT-FILE THRU 0600-EXIT             02040006
+           PERFORM 1000-AREA-SWEEP-AND-ERASE THRU 1000-EXIT             02100001
+              UNTIL DB-END-OF-SET                                       02110001
+                                                                        02130000
+                                                                        02140000
+      * END OF SET INFO TO OUT2, NOW REC INFO TO OUT1                   02150000
+                                                                        02160000
+           DISPLAY '                                         '.         02170000
+           DISPLAY '---------- FINAL STATISTICS ----------------'.      02180000
+           DISPLAY '                                         '.         02190001
+           MOVE WS-EMP-READ-COUNTER TO WS-SHOW-COUNT                    02200001
+           DISPLAY '  EMPLOYEE-RECS READ   = ' WS-SHOW-COUNT            02210001
+           MOVE WS-EMP-ERASE-COUNTER TO WS-SHOW-COUNT                   02220001
+           DISPLAY '  EMPLOYEE-RECS ERASED = ' WS-SHOW-COUNT            02230001
+           DISPLAY ' '                                                  02240000
+                                                                        02250000
+           PERFORM 9000-WRAP-UP     THRU 9000-EXIT.                     02260000
+                                                                        02270000
+           GOBACK.                                                      02280000
+                                                                        02290000
+      *******************************************************           02300000
+      * OPEN FILES AND GET OOAK AND DESIRED SCHEMA          *           02310000
+      *******************************************************           02320000
+       0500-INITIALIZE.                                                 02330000
+                                                                        02340000
+           ACCEPT TODAYS-DATE FROM DATE.                                02350000
+           ACCEPT TODAYS-TIME FROM TIME.                                02360000
+           DISPLAY 'START: EMPDEMO3 - SHOW EMPLOYEE JOB HISTORY '       02370002
+           DISPLAY 'DATE = ' TODAYS-DATE                                02380000
+                   ' TIME = ' TODAYS-TIME.                              02390000
+                                                                        02400000
+           COPY IDMS SUBSCHEMA-BINDS.                                   02410000
+           READY EMP-DEMO-REGION USAGE-MODE UPDATE.                     02420000
+           PERFORM IDMS-STATUS.                                         02430000
+           READY ORG-DEMO-REGION USAGE-MODE UPDATE.                     02440000
+           PERFORM IDMS-STATUS.                                         02450000
+       0500-EXIT.                                                       02460000
+           EXIT.                                                        02470000
+                                                                        02480000
+                                                                        02490000
+       0600-ZERO-OUT-COMMIT-FILE.                                       02490106
+      * WRITE A ZERO COUNTER BACK TO COMMIT-FILE                        02490206
+           OPEN OUTPUT COMMIT1-FILE                                     02491006
+           INITIALIZE COMMIT1-REC                                       02492006
+           WRITE COMMIT1-REC                                            02494006
+           CLOSE COMMIT1-FILE                                           02495006
+           .                                                            02496006
+       0600-EXIT.                                                       02497006
+           EXIT.                                                        02498006
+       1000-AREA-SWEEP-AND-ERASE.                                       02500001
+      * SWEEP FOR ALL EMPLOYEE RECORDS IN AREA=EMP-DEMO-REGION          02510001
+            IF WS-EMP-READ-COUNTER > 0                                  02520001
+               OBTAIN NEXT  EMPLOYEE WITHIN EMP-DEMO-REGION             02530001
+            ELSE                                                        02540001
+               OBTAIN FIRST EMPLOYEE WITHIN EMP-DEMO-REGION             02550001
+            END-IF                                                      02560001
+            IF DB-END-OF-SET                                            02570001
+               GO TO 1000-EXIT                                          02580001
+            END-IF                                                      02590001
+            PERFORM IDMS-STATUS                                         02600001
+            ADD 1 TO WS-EMP-READ-COUNTER                                02610001
+      * FOR PURPOSES OF TESTING EMPDEMO3,                               02620002
+      * I WAS CAREFUL TO ONLY ADD EMPLOYEE-IDS IN THE 1000-RANGE        02630001
+            IF EMP-ID-0415 > '1000'                                     02640001
+            AND EMP-ID-0415 < '2000'                                    02641001
+               DISPLAY 'ERASING EMP-ID=' EMP-ID-0415                    02650001
+               ERASE EMPLOYEE                                           02660001
+               PERFORM IDMS-STATUS                                      02670001
+               ADD 1 TO WS-EMP-ERASE-COUNTER                            02671001
+      * IF THERE WERE HUNDREDS OF EMPLOYEE-RECS,                        02680001
+      * THEN THIS PROGRAM SHOULD DO COMMITS HERE                        02690001
+      * BUT SINCE THERE ARE LESS THAN ONE-HUNDRED, NO PROBLEM.          02700001
+            END-IF                                                      02710000
+            .                                                           02720001
+       1000-EXIT.                                                       02730000
+           EXIT.                                                        02740000
+                                                                        02750000
+      ******************************************************            02760000
+      * FINISH & DISPLAY COUNTS                                         02770000
+      ******************************************************            02780000
+       9000-WRAP-UP.                                                    02790000
+                                                                        02800000
+           ACCEPT TODAYS-DATE FROM DATE.                                02810000
+           ACCEPT TODAYS-TIME FROM TIME.                                02820000
+           DISPLAY SPACES.                                              02830000
+           DISPLAY 'DATE = ' TODAYS-DATE.                               02840000
+           DISPLAY 'TIME = ' TODAYS-TIME.                               02850000
+           DISPLAY SPACES.                                              02860000
+           DISPLAY ' '.                                                 02870000
+           PERFORM 9100-STATISTICS THRU 9100-EXIT                       02880000
+           .                                                            02890000
+           FINISH                                                       02900001
+           PERFORM IDMS-STATUS                                          02920000
+           .                                                            02930000
+       9000-EXIT.                                                       02940000
+           EXIT.                                                        02950000
+                                                                        02960000
+                                                                        02970000
+       9100-STATISTICS.                                                 02980000
+           DISPLAY '***********************************************'    02990000
+                   '***********************************************'    03000000
+                                                                        03010000
+           ACCEPT DB-STATISTICS FROM IDMS-STATISTICS.                   03020000
+           PERFORM IDMS-STATUS                                          03030000
+                                                                        03040000
+           MOVE PAGES-READ      TO WS-SHOW-STAT-1                       03050000
+           MOVE PAGES-REQUESTED TO WS-SHOW-STAT-2                       03060000
+           DISPLAY '        PAGES-READ=' WS-SHOW-STAT-1                 03070000
+                   '   PAGES-REQUESTED=' WS-SHOW-STAT-2                 03080000
+                                                                        03090000
+           MOVE PAGES-READ TO WS-SHOW-STAT-1                            03100000
+           IF PAGES-READ > 0                                            03110000
+              COMPUTE WS-BUFFER-UTIL-RATIO =                            03120000
+                       PAGES-REQUESTED / PAGES-READ                     03130000
+           ELSE                                                         03140000
+              MOVE ZERO TO WS-BUFFER-UTIL-RATIO                         03150000
+              .                                                         03160000
+           MOVE WS-BUFFER-UTIL-RATIO TO WS-SHOW-RATIO                   03170000
+           DISPLAY '     PAGES-WRITTEN=' WS-SHOW-STAT-1                 03180000
+                   ' BUFFER-UTIL-RATIO=        ' WS-SHOW-RATIO          03190000
+                                                                        03200000
+           MOVE CALC-TARGET     TO WS-SHOW-STAT-1                       03210000
+           MOVE CALC-OVERFLOW   TO WS-SHOW-STAT-2                       03220000
+           DISPLAY '       CALC-TARGET=' WS-SHOW-STAT-1                 03230000
+                   '     CALC-OVERFLOW=' WS-SHOW-STAT-2                 03240000
+                                                                        03250000
+           MOVE VIA-TARGET      TO WS-SHOW-STAT-1                       03260000
+           MOVE VIA-OVERFLOW    TO WS-SHOW-STAT-2                       03270000
+           DISPLAY '        VIA-TARGET=' WS-SHOW-STAT-1                 03280000
+                   '      VIA-OVERFLOW=' WS-SHOW-STAT-2                 03290000
+                                                                        03300000
+           MOVE LINES-REQUESTED TO WS-SHOW-STAT-1                       03310000
+           MOVE CALLS-TO-IDMS   TO WS-SHOW-STAT-2                       03320000
+           DISPLAY '   LINES-REQUESTED=' WS-SHOW-STAT-1                 03330000
+                   '     CALLS-TO-IDMS=' WS-SHOW-STAT-2                 03340000
+                                                                        03350000
+           MOVE FRAGMENTS-STORED  TO WS-SHOW-STAT-1                     03360000
+           MOVE RECS-RELOCATED    TO WS-SHOW-STAT-2                     03370000
+           DISPLAY '  FRAGMENTS-STORED=' WS-SHOW-STAT-1                 03380000
+                   '    RECS-RELOCATED=' WS-SHOW-STAT-2                 03390000
+                                                                        03400000
+           DISPLAY '***********************************************'    03410000
+                   '***********************************************'    03420000
+           DISPLAY '                                          '.        03430000
+       9100-EXIT.                                                       03440000
+           EXIT.                                                        03450000
+                                                                        03460000
+       COPY IDMS IDMS-STATUS.                                           03470000
+       IDMS-ABORT SECTION.                                              03480000
+       IDMS-ABORT-EXIT.                                                 03490000
+           EXIT.                                                        03500000

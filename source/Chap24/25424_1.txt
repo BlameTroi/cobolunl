@@ -1,0 +1,299 @@
+ @OPTIONS NOALPHAL
+
+ IDENTIFICATION DIVISION.
+ PROGRAM-ID. ODBC-EXAMPLE.
+
+ DATA DIVISION.
+
+ WORKING-STORAGE SECTION.
+
+* ODBC defined values
+ 01 SQL-PARAM-INPUT                 PIC S9(4) COMP-5 VALUE 1.
+ 01 SQL-INTEGER                     PIC S9(4) COMP-5 VALUE 4.
+ 01 SQL-C-LONG                      PIC S9(4) COMP-5 VALUE 4.
+
+* ODBC handles
+ 01 ODBC-HENV                       PIC S9(9) COMP-5 VALUE 0.
+ 01 ODBC-HDBC                       PIC S9(9) COMP-5 VALUE 0.
+ 01 ODBC-HSTMT                      PIC S9(9) COMP-5 VALUE 0.
+
+* ODBC return code
+ 01 ODBC-RETCODE                    PIC S9(4) COMP-5 VALUE 0.
+
+* ODBC error message
+ 01 ODBC-ERRMSG                     PIC X(512).
+
+* Connection information
+ 01 DATA-SOURCE                     PIC X(23)
+    VALUE "SQL Anywhere 5.0 Sample".
+ 01 DATA-SOURCE-LEN                 PIC S9(4) COMP-5 VALUE 23.
+ 01 USER-NAME                       PIC X(20) VALUE "dba".
+ 01 USER-PASSWORD                   PIC X(20) VALUE "sql".
+
+* Status flags - initially set to OK
+ 01 CONNECTION-FLAG                 PIC 9 VALUE 1.
+    88 CONNECTION-OK                VALUE 1.
+    88 CONNECTION-FAILED            VALUE 0.
+ 01 SQL-FLAG                        PIC 9 VALUE 1.
+    88 SQL-OK                       VALUE 1.
+    88 SQL-FAILED                   VALUE 0.
+
+* The SQL statement to be executed
+ 01 SQL-STATEMENT                   PIC X(40)
+    VALUE "SELECT * FROM CONTACT WHERE ID = ?".
+ 01 PARAM-LEN                       PIC S9(9) COMP-5.
+
+* User input
+ 01 ID-INPUT                        PIC S9(9) COMP-5.
+
+* Data retrieval variables
+ 01 COL-NO                          PIC S9(5) COMP-5.
+ 01 DATA-LEN                        PIC S9(9) COMP-5.
+ 01 DATA-IN                         PIC X(256).
+
+
+ PROCEDURE DIVISION.
+
+ MAIN SECTION.
+
+ PERFORM CONNECTION
+     IF CONNECTION-OK
+        DISPLAY "Connected to " WITH NO ADVANCING
+        DISPLAY DATA-SOURCE
+        PERFORM PREPARE-SQL
+        IF SQL-OK
+           DISPLAY "Enter ID number or -1 to Quit -> "
+              WITH NO ADVANCING
+           ACCEPT ID-INPUT
+           PERFORM UNTIL ID-INPUT = -1
+              PERFORM DO-QUERY
+              DISPLAY "-> " WITH NO ADVANCING
+              ACCEPT ID-INPUT
+           END-PERFORM
+        ELSE
+           DISPLAY "SQL call set-up failed"
+        END-IF
+        PERFORM DISCONNECTION
+     ELSE
+        DISPLAY "Connection to data source failed"
+     END-IF
+
+     EXIT PROGRAM.
+
+***************************************************************
+*         Initialize ODBC and connect to data source          *
+***************************************************************
+ CONNECTION SECTION.
+
+* Allocate environment handle
+     MOVE 0 TO RETURN-CODE
+     CALL "SQLAllocEnv" WITH STDCALL USING
+        BY REFERENCE ODBC-HENV
+     MOVE RETURN-CODE TO ODBC-RETCODE
+     IF ODBC-RETCODE NOT = 0 AND NOT = 1
+        DISPLAY "Cannot allocate environment handle"
+        SET CONNECTION-FAILED TO TRUE
+     END-IF
+     IF NOT CONNECTION-FAILED
+* Allocate connection handle
+        CALL "SQLAllocConnect" WITH STDCALL USING
+           BY VALUE ODBC-HENV
+           BY REFERENCE ODBC-HDBC
+        MOVE RETURN-CODE TO ODBC-RETCODE
+        IF ODBC-RETCODE NOT = 0 AND NOT = 1
+           DISPLAY "Cannot allocate connection handle"
+           CALL "SQLFreeEnv" WITH STDCALL USING
+              BY VALUE ODBC-HENV
+           SET CONNECTION-FAILED TO TRUE
+        END-IF
+     END-IF
+     IF NOT CONNECTION-FAILED
+* Connect to data source
+        CALL "SQLConnect" WITH STDCALL USING
+           BY VALUE ODBC-HDBC
+           BY REFERENCE DATA-SOURCE
+           BY VALUE DATA-SOURCE-LEN
+           BY REFERENCE USER-NAME
+           BY VALUE LENGTH OF USER-NAME
+           BY REFERENCE USER-PASSWORD
+           BY VALUE LENGTH OF USER-PASSWORD
+        MOVE RETURN-CODE TO ODBC-RETCODE
+        IF ODBC-RETCODE NOT = 0
+           PERFORM DO-ERRMSG
+           IF ODBC-RETCODE NOT = 1
+              SET CONNECTION-FAILED TO TRUE
+           END-IF
+        END-IF
+     END-IF
+
+     CONTINUE.
+
+***************************************************************
+*        Disconnect from data source and free handles         *
+***************************************************************
+ DISCONNECTION SECTION.
+
+     IF ODBC-HSTMT NOT = 0
+* Statement handle was allocated
+        CALL "SQLFreeStmt" WITH STDCALL USING
+           BY VALUE ODBC-HSTMT
+           BY VALUE 1
+     END-IF
+     CALL "SQLDisconnect" WITH STDCALL USING
+        BY VALUE ODBC-HDBC
+     CALL "SQLFreeConnect" WITH STDCALL USING
+        BY VALUE ODBC-HDBC
+     CALL "SQLFreeEnv" WITH STDCALL USING
+        BY VALUE ODBC-HENV
+
+     CONTINUE.
+
+***************************************************************
+*       Allocate statement handle and prepare SQL call        *
+***************************************************************
+ PREPARE-SQL SECTION.
+
+* Allocate statement handle
+     CALL "SQLAllocStmt" WITH STDCALL USING
+         BY VALUE ODBC-HDBC
+         BY REFERENCE ODBC-HSTMT
+     MOVE RETURN-CODE TO ODBC-RETCODE
+     IF ODBC-RETCODE NOT = 0 AND NOT = 1
+         DISPLAY "Cannot allocate statement handle"
+         SET SQL-FAILED TO TRUE
+     END-IF
+     IF NOT SQL-FAILED
+* Prepare SQL statement
+        CALL "SQLPrepare" WITH STDCALL USING
+           BY VALUE ODBC-HSTMT
+           BY REFERENCE SQL-STATEMENT
+           BY VALUE LENGTH OF SQL-STATEMENT
+        MOVE RETURN-CODE TO ODBC-RETCODE
+        IF ODBC-RETCODE NOT = 0
+           PERFORM DO-ERRMSG
+           IF ODBC-RETCODE NOT = 1
+              SET SQL-FAILED TO TRUE
+           END-IF
+        END-IF
+     END-IF
+     IF NOT SQL-FAILED
+* Bind where clause parameter
+        CALL "SQLBindParameter" WITH STDCALL USING
+           BY VALUE ODBC-HSTMT
+           BY VALUE 1
+           BY VALUE SQL-PARAM-INPUT
+           BY VALUE SQL-INTEGER
+           BY VALUE SQL-C-LONG
+           BY VALUE 0
+           BY VALUE 0
+           BY REFERENCE ID-INPUT
+           BY VALUE 0
+           BY REFERENCE PARAM-LEN
+        MOVE RETURN-CODE TO ODBC-RETCODE
+        IF ODBC-RETCODE NOT = 0
+           PERFORM DO-ERRMSG
+           IF ODBC-RETCODE NOT = 1
+              SET SQL-FAILED TO TRUE
+           END-IF
+        END-IF
+     END-IF
+
+     CONTINUE.
+
+***************************************************************
+*                    Execute the query                        *
+***************************************************************
+ DO-QUERY SECTION.
+
+* Execute the statement
+     CALL "SQLExecute" WITH STDCALL USING
+        BY VALUE ODBC-HSTMT
+     MOVE RETURN-CODE TO ODBC-RETCODE
+     IF ODBC-RETCODE NOT = 0
+        PERFORM DO-ERRMSG
+     END-IF
+* If successfully executed, display result
+IF ODBC-RETCODE = 0 OR 1
+        CALL "SQLFetch" WITH STDCALL USING
+           BY VALUE ODBC-HSTMT
+        MOVE RETURN-CODE TO ODBC-RETCODE
+        IF ODBC-RETCODE NOT = 0
+           PERFORM DO-ERRMSG
+        END-IF
+        IF ODBC-RETCODE = 0 OR 1
+* Display ID
+           DISPLAY "  " WITH NO ADVANCING
+           MOVE 1 TO COL-NO
+           PERFORM GETDATA
+* Display first name
+           DISPLAY " Name: " WITH NO ADVANCING
+           MOVE 3 TO COL-NO
+           PERFORM GETDATA
+* Display last name
+           MOVE 2 TO COL-NO
+           PERFORM GETDATA
+           DISPLAY " "
+        ELSE
+           DISPLAY "  Record not found."
+        END-IF
+     END-IF
+* Re-set the statement
+     CALL "SQLFreeStmt" WITH STDCALL USING
+        BY VALUE ODBC-HSTMT
+        BY VALUE 0
+
+     CONTINUE.
+
+***************************************************************
+*                   Get and display a value                   *
+***************************************************************
+ GETDATA SECTION.
+
+     CALL "SQLGetData" WITH STDCALL USING
+        BY VALUE ODBC-HSTMT
+        BY VALUE COL-NO
+        BY VALUE 1
+        BY REFERENCE DATA-IN
+        BY VALUE LENGTH OF DATA-IN
+        BY REFERENCE DATA-LEN
+     MOVE RETURN-CODE TO ODBC-RETCODE
+     IF ODBC-RETCODE = 0 OR 1
+        DISPLAY DATA-IN WITH NO ADVANCING
+        DISPLAY " " WITH NO ADVANCING
+        MOVE LOW-VALUES TO DATA-IN
+     END-IF
+
+     CONTINUE.
+
+***************************************************************
+*                    Display error message                    *
+***************************************************************
+ DO-ERRMSG SECTION.
+
+     EVALUATE ODBC-RETCODE
+        WHEN 1
+* SQL_SUCCESS_WITH_INFO
+           DISPLAY "ODBC Warning:"
+        WHEN -1
+* SQL_ERROR
+           DISPLAY "ODBC Error:"
+     END-EVALUATE
+* If some other return value, there could still be a message
+* Get and display ODBC message
+     CALL "SQLError" WITH STDCALL USING
+        BY VALUE ODBC-HENV
+        BY VALUE ODBC-HDBC
+        BY VALUE ODBC-HSTMT
+        BY VALUE 0
+        BY VALUE 0
+        BY REFERENCE ODBC-ERRMSG
+        BY VALUE LENGTH OF ODBC-ERRMSG
+        BY VALUE 0
+     MOVE RETURN-CODE TO ODBC-RETCODE
+     IF RETURN-CODE = 0 OR 1
+        DISPLAY ODBC-ERRMSG
+     END-IF
+
+     CONTINUE.
+
+ END PROGRAM ODBC-EXAMPLE.

@@ -1,0 +1,58 @@
+ START: EMPDEMO1 - SHOW EMPLOYEE JOB HISTORY                                    
+ DATE = 980505 TIME = 083013                                                    
+                                                                                
+ -------------------------------------------------------------------------------
+          EMP-ID = 0023                                                         
+ LAST/FIRST NAME = O'HEARN         KATHERINE                                    
+            CITY = NATICK          STATE=MA                                     
+                                                                                
+           __   05/05/1979   ACTIVE     44 PROGRAMMER/ANALYST                   
+           __   05/04/1978  05/04/1979  43 PROGRAMMER TRAINEE                   
+                                                                                
+ -------------------------------------------------------------------------------
+          EMP-ID = 0329                                                         
+ LAST/FIRST NAME = FINN            PHINEAS                                      
+            CITY = WESTON          STATE=MA                                     
+                                                                                
+           __   06/16/1979   ACTIVE     52 KEEPER OF BALLOONS                   
+                                                                                
+ -------------------------------------------------------------------------------
+          EMP-ID = 0301                                                         
+ LAST/FIRST NAME = LANCHESTER      BURT                                         
+            CITY = WALTHAM         STATE=MA                                     
+                                                                                
+           __   02/03/1980   ACTIVE     53 RAINMAKER                            
+           __   02/03/1977  02/02/1980  52 RAINMAKER                            
+           __   02/03/1975  02/02/1977  52 RAINMAKER                            
+                                                                                
+ -------------------------------------------------------------------------------
+          EMP-ID = 0031                                                         
+ LAST/FIRST NAME = LIPSICH         HERBERT                                      
+            CITY = WALDEN          STATE=MA                                     
+                                                                                
+           __   04/29/1981   ACTIVE     21 COMPUTER OPERATOR                    
+                                                                                
+ ---------- FINAL STATISTICS ----------------                                   
+                                                                                
+  NUMBER OF INPUTS= 00000004                                                    
+                                                                                
+  NUMBER OF RECORDS BY RECORD-TYPE:                                             
+              EMPLOYEE =          4                                             
+            EMPOSITION =          7                                             
+                   JOB =          7                                             
+   EMPLOYEES NOT FOUND =          0                                             
+                                                                                
+                                                                                
+ DATE = 980505                                                                  
+ TIME = 083018                                                                  
+                                                                                
+                                                                                
+ *******************************************************************************
+         PAGES-READ=             7   PAGES-REQUESTED=            16             
+      PAGES-WRITTEN=             7 BUFFER-UTIL-RATIO=           2.0             
+        CALC-TARGET=             0     CALC-OVERFLOW=             0             
+         VIA-TARGET=             0      VIA-OVERFLOW=             0             
+    LINES-REQUESTED=            35     CALLS-TO-IDMS=            35             
+   FRAGMENTS-STORED=             0    RECS-RELOCATED=             0             
+ *******************************************************************************
+                                                                                

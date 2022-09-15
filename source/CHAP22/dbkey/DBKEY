@@ -1,0 +1,230 @@
+PUT YOUR JOBCARD HERE
+//********************************************************************* 00030000
+//*                                                                     00040000
+//* INSTREAM PROC "COBNRWI" FOLLOWS - UP TO // PEND STATEMENT           00050000
+//* THIS MEMBER CONTAINS BOTH THE SUBROUTINE "DBKEY"                    00060000
+//* AND THE PROGRAM TO CALL AND TEST THE SUBORUTINE "DBKEYT"            00070000
+//*                                                                     00080000
+//********************************************************************* 00090000
+//COBNRWI  PROC SYSOUT='*',                                             00100000
+//         MEMBER=DUMMY,                                                00110000
+//         WORK=VIO,                                                    00120000
+//         ADV=NOADV,                                                   00130000
+//         DATA='DATA(31)',                                             00140000
+//         DYNAM='DYNAM',                                               00150000
+//         RENT='NORENT',                                               00160000
+//         COBRET=5,                                                    00170000
+//         MAP=MAP,OFFSET=OFFSET                                        00180000
+//*                                                                   * 00190000
+//*                                                                     00200000
+//COB      EXEC PGM=IGYCRCTL,REGION=2M,                                 00210000
+//         PARM=('NOC(S),FLAG(I,E),TRUNC(BIN),XREF(FULL),NOSSR',        00220000
+//             '&ADV,&DATA,&DYNAM,&RENT,&MAP,&OFFSET')                  00230000
+//STEPLIB  DD   DSN=COB2.COB2COMP,DISP=SHR                              00240000
+//SYSLIB  DD   DISP=SHR,DSN=NRW.WORK.SRCLIB                             00260000
+//SYSPRINT DD   SYSOUT=&SYSOUT                                          00270000
+//SYSLIN   DD   DSN=&&LOADSET,SPACE=(TRK,(10,5),RLSE),                  00290000
+//         DISP=(NEW,PASS),UNIT=&WORK,                                  00300000
+//         DCB=(RECFM=FB,LRECL=80,BLKSIZE=800)                          00310000
+//SYSUT1   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00320000
+//SYSUT2   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00330000
+//SYSUT3   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00340000
+//SYSUT4   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00350000
+//SYSUT5   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00360000
+//SYSUT6   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00370000
+//SYSUT7   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00380000
+//*                                                                     00420000
+//LKED     EXEC PGM=PANLINK,REGION=2M,                                  00430000
+//  PARM='LIST,XREF,LET,MAP,SIZE=(1536K,512K)'                          00440000
+//SYSUT1   DD UNIT=SYSDA,SPACE=(TRK,(5,2))                              00450000
+//PEXLIN   DD UNIT=SYSDA,SPACE=(TRK,(5,2))                              00460000
+//PEXUT2   DD UNIT=SYSDA,SPACE=(TRK,(5,2))                              00470000
+//PEXLMOD  DD UNIT=SYSDA,SPACE=(TRK,(5,2,5))                            00480000
+//SYSLLIB  DD DSN=COB2.COB2LIB,DISP=SHR,DCB=BLKSIZE=19069               00490000
+//SYSLMOD  DD DISP=SHR,DSN=NRW.WORK.LOADLIB(&MEMBER)                    00530000
+//SYSLIN   DD DSN=&&LOADSET,DISP=(OLD,DELETE)                           00540000
+//         DD DDNAME=SYSIN                                              00550000
+//SYSPRINT DD SYSOUT=&SYSOUT                                            00560000
+//SYSLPRT  DD SYSOUT=&SYSOUT                                            00570000
+//PANPRINT DD SYSOUT=&SYSOUT                                            00580000
+// PEND                                                                 00590000
+//*****************************************************************     00600000
+//* EXECUTE ABOVE PROC HERE:                                            00610000
+//*****************************************************************     00620000
+//COMPSTEP EXEC COBNRWI MEMBER=DBKEY                                    00630001
+//COB.SYSIN DD *                                                        00640000
+       IDENTIFICATION DIVISION.                                         00660000
+       PROGRAM-ID. DBKEY.                                               00670001
+                                                                        00680000
+      *************************************************************     00730004
+      *  PROGRAM: DBKEY                                                 00740004
+      *   AUTHOR: NEAL WALTERS                                          00750004
+      *     DATE: 1997                                                  00751004
+      *  PURPOSE: CONVERT STANDARD DBKEY S9(8) TO FORMATTED             00752004
+      *           DBKEY IN PAGE:LINE FORMAT AS SHOWN BELOW:             00753004
+      *                                                                 00754004
+      *   DBKEY=     2,736,837                                          00754104
+      *   CONVERTS TO     10,690:197                                    00755004
+      *                                                                 00756004
+      *  NOTE: PROGRAM MUST BE ABLE TO HANDLE EXTREMELY LARGE           00757004
+      *        PAGES NUMBERS (THOSE OVER 8,000,000)                     00758004
+      *        WHICH ACT LIKE SIGNED NEGATIVE NUMBERS IN AN             00759004
+      *        S9(8) COMP FIELD.                                        00759104
+      *************************************************************     00760000
+                                                                        00770000
+       ENVIRONMENT DIVISION.                                            00780000
+       INPUT-OUTPUT SECTION.                                            00790000
+       FILE-CONTROL.                                                    00800000
+                                                                        00810000
+                                                                        00830000
+       DATA DIVISION.                                                   00840000
+                                                                        00850000
+                                                                        01010000
+        EJECT                                                           01020000
+      * *********************************************************       01030000
+       WORKING-STORAGE SECTION.                                         01040000
+      * *********************************************************       01050000
+       01  BGNWS        PIC X(29) VALUE '*** BEGIN WORKING-STORAGE ***'.01060000
+                                                                        01070000
+                                                                        01080000
+       01  WS-MISC.                                                     01160000
+           02  WS-BIG-256                   PIC S9(16) COMP VALUE +256. 01180000
+           02  WS-BIG-DBKEY-OLD             PIC S9(16).                 01190000
+           02  WS-PAGE-NUM-OLD              PIC S9(16) COMP.            01210000
+           02  WS-PAGE-NUM-OLD-2            PIC S9(16) COMP.            01220000
+           02  WS-LINE-NUM-OLD              PIC S9(16) COMP.            01240000
+           02  WS-SHOW-RECORD-NUM           PIC ZZZ,ZZZ,ZZ9.            01280000
+           02  WS-SHOW-BIG-NUM              PIC +ZZZ,ZZZ,ZZZ,ZZZ,ZZ9.   01290000
+           02  WS-SHOW-DBKEY-OLD.                                       01300000
+               03  WS-SHOW-PAGE-OLD          PIC +ZZ,ZZZ,ZZ9.           01310000
+               03  FILLER                    PIC X     VALUE ':'.       01320000
+               03  WS-SHOW-LINE-OLD          PIC 999.                   01330000
+                                                                        01400000
+                                                                        01410000
+       LINKAGE SECTION.                                                 01420000
+       01  DBKEY-GROUP.                                                 01430001
+           02  LINK-DBKEY          PIC S9(8) COMP.                      01440001
+           02  LINK-DBKEY-A REDEFINES LINK-DBKEY                        01450001
+                                   PIC X(4).                            01460001
+           02  LINK-NUMERIC-PAGE   PIC 9(10).                           01461001
+           02  LINK-PAGE-AND-LINE.                                      01470001
+               03  LINK-PL-PAGE         PIC ZZ,ZZZ,ZZ9.                 01480001
+               03  LINK-PL-COLON        PIC X.                          01490001
+               03  LINK-PL-LINE         PIC 999.                        01500001
+                                                                        01510000
+       PROCEDURE DIVISION USING DBKEY-GROUP.                            01520001
+                                                                        01530000
+       110-CONVERT-DBKEY.                                               01540000
+            MOVE LINK-DBKEY TO WS-BIG-DBKEY-OLD                         01550001
+            IF LINK-DBKEY NOT < ZERO                                    01560001
+               MOVE LINK-DBKEY TO WS-BIG-DBKEY-OLD                      01570001
+             ELSE                                                       01580000
+      * THERE REALLY ARE NO NEGATIVE DBKEYS.  MUST TRANSLATE            01590000
+      * TO A POSITIVE NUMBER.                                           01600000
+      *        DISPLAY 'HANDLING DBKEY OVER 8,000,000 '                 01610000
+               MOVE LINK-DBKEY TO WS-BIG-DBKEY-OLD                      01620001
+      * THIS BIG NUMBER = LARGEST PAGE 16777216 X 256 + 1               01630000
+               ADD WS-BIG-DBKEY-OLD TO 4294967296                       01640000
+                   GIVING WS-BIG-DBKEY-OLD                              01650000
+               .                                                        01660000
+      * HERE IS THE DIVIDE TO GET THE PAGE/LINE NUMBER                  01670000
+            DIVIDE WS-BIG-256 INTO WS-BIG-DBKEY-OLD                     01680000
+               GIVING WS-PAGE-NUM-OLD                                   01690000
+               REMAINDER WS-LINE-NUM-OLD                                01700000
+               .                                                        01740000
+      * MOVE RESULTS BACK TO LINKAGE SECTION                            01741001
+            MOVE WS-PAGE-NUM-OLD TO LINK-NUMERIC-PAGE                   01742001
+            MOVE WS-PAGE-NUM-OLD TO LINK-PL-PAGE                        01742101
+            MOVE WS-LINE-NUM-OLD TO LINK-PL-LINE                        01743001
+            MOVE ':'             TO LINK-PL-COLON                       01744001
+            .                                                           01750001
+       110-EXIT.  EXIT.                                                 01760000
+                                                                        01770000
+                                                                        01780000
+                                                                        01790000
+//LKED.SYSIN  DD *                                                      01800000
+ NAME DBKEY(R)                                                          01810001
+//COMPSTEP EXEC COBNRWI MEMBER=DBKEYT                                   01820001
+//COB.SYSIN DD *                                                        01830001
+      *RETRIEVAL                                                        01840001
+       IDENTIFICATION DIVISION.                                         01850001
+       PROGRAM-ID. DBKEYT.                                              01860001
+                                                                        01870001
+      *************************************************************     01871004
+      *  PROGRAM: DBKEY                                                 01872004
+      *   AUTHOR: NEAL WALTERS                                          01873004
+      *     DATE: 1997                                                  01874004
+      *  PURPOSE: CALLS SUBROUTINE 'DBKEY' FOR UNIT TESTING:            01875004
+      *                                                                 01875104
+      *  PURPOSE: CONVERT STANDARD DBKEY S9(8) TO FORMATTED             01875204
+      *           DBKEY IN PAGE:LINE FORMAT AS SHOWN BELOW:             01876004
+      *                                                                 01877004
+      *   DBKEY=     2,736,837                                          01878004
+      *   CONVERTS TO     10,690:197                                    01879004
+      *                                                                 01879104
+      *  NOTE: PROGRAM MUST BE ABLE TO HANDLE EXTREMELY LARGE           01879204
+      *        PAGES NUMBERS (THOSE OVER 8,000,000)                     01879304
+      *        WHICH ACT LIKE SIGNED NEGATIVE NUMBERS IN AN             01879404
+      *        S9(8) COMP FIELD.                                        01879504
+      *************************************************************     01879604
+                                                                        01879704
+       ENVIRONMENT DIVISION.                                            01970001
+       INPUT-OUTPUT SECTION.                                            01980001
+                                                                        02020001
+       DATA DIVISION.                                                   02030001
+      ***********************************************************       02220004
+       WORKING-STORAGE SECTION.                                         02230001
+      ***********************************************************       02240004
+       01  BGNWS        PIC X(29) VALUE '*** BEGIN WORKING-STORAGE ***'.02250001
+       01  WS-MISC.                                                     02251001
+           02  WS-SHOW-DBKEY        PIC --,---,---,--9.                 02252003
+                                                                        02260001
+                                                                        02270001
+       01  DBKEY-GROUP.                                                 02620001
+           02  LINK-DBKEY           PIC S9(8) COMP.                     02630001
+           02  LINK-DBKEY-A REDEFINES LINK-DBKEY                        02640001
+                                   PIC X(4).                            02650001
+           02  LINK-NUMERIC-PAGE   PIC 9(10).                           02660001
+           02  LINK-PAGE-AND-LINE.                                      02670001
+               03  LINK-PL-PAGE         PIC ZZ,ZZZ,ZZ9.                 02680001
+               03  LINK-PL-COLON        PIC X.                          02690001
+               03  LINK-PL-LINE         PIC 999.                        02700001
+                                                                        02710001
+       PROCEDURE DIVISION.                                              02720001
+                                                                        02730001
+       000-MAIN.                                                        02740001
+            DISPLAY 'START PROGRAM=DBKEYT'.                             02741001
+            DISPLAY ' '                                                 02742003
+                                                                        02743003
+            MOVE    2736837 TO LINK-DBKEY.                              02750001
+            CALL 'DBKEY' USING DBKEY-GROUP.                             02760001
+            MOVE LINK-DBKEY TO WS-SHOW-DBKEY                            02770003
+            DISPLAY 'DBKEY=' WS-SHOW-DBKEY.                             02771003
+            DISPLAY 'CONVERTS TO ' LINK-PAGE-AND-LINE.                  02780001
+                                                                        02790001
+            MOVE -1522736837 TO LINK-DBKEY.                             02800001
+            CALL 'DBKEY' USING DBKEY-GROUP.                             02810001
+            MOVE LINK-DBKEY TO WS-SHOW-DBKEY                            02811003
+            DISPLAY 'DBKEY=' WS-SHOW-DBKEY.                             02820001
+            DISPLAY 'CONVERTS TO ' LINK-PAGE-AND-LINE.                  02830001
+                                                                        02830101
+                                                                        02830201
+            MOVE  1522736837 TO LINK-DBKEY.                             02830301
+            CALL 'DBKEY' USING DBKEY-GROUP.                             02830401
+            MOVE LINK-DBKEY TO WS-SHOW-DBKEY                            02830503
+            DISPLAY 'DBKEY=' WS-SHOW-DBKEY.                             02830601
+            DISPLAY 'CONVERTS TO ' LINK-PAGE-AND-LINE.                  02830701
+                                                                        02830801
+            DISPLAY ' '                                                 02830901
+            DISPLAY 'END   PROGRAM=DBKEYT'.                             02831001
+            GOBACK                                                      02831101
+            .                                                           02832001
+//LKED.SYSIN  DD *                                                      02840001
+ NAME DBKEYT(R)                                                         02850001
+//**********************************************************************02860000
+//* EXECUTE TEST PROGRAM TO TEST SUBROUTINE 
+//**********************************************************************02900000
+//*                                                                     02910000
+//STEP01   EXEC PGM=DBKEYT,PARM='NN',REGION=6M                          02920001
+//STEPLIB DD  DISP=SHR,DSN=NRW.WORK.LOADLIB                             02930001
+//SYSOUT  DD  SYSOUT=*,DCB=(RECFM=FB,LRECL=133,BLKSIZE=133)             02970000

@@ -1,0 +1,85 @@
+------------------------------------------------------                          
+ STEP02 - run with ABEND after update of record 8                               
+------------------------------------------------------                          
+ START: EMPDEMO2 - SHOW EMPLOYEE JOB HISTORY                                    
+ DATE = 980505 TIME = 083402                                                    
+ 0500B: COMMIT-FREQ=0003                                                        
+ 0500B: ABEND-LOC=0008                                                          
+ 8500 RESTARTING AT UPDATE-COUNTER=0000                                         
+ 8500 REPOSITION ON //INPUT1 FILE COMPLETED                                     
+ -------------------------------------------                                    
+ 1000-READ  00000001:  5300 001 1001 JOHN            DOE                        
+ 1000-STORE 00000001:  5300 001 1001 JOHN            DOE                        
+ 1000-READ  00000002:  5100 005 1002 JANE            DOE                        
+ 1000-STORE 00000002:  5100 005 1002 JANE            DOE                        
+ 1000-READ  00000003:  2000 008 1003 JIM             DOVE                       
+ 1000-STORE 00000003:  2000 008 1003 JIM             DOVE                       
+ 8000A: COMMIT WS-UPDATE-COUNTER = 0003                                         
+ 1000-READ  00000004:  1000 012 1004 SALLY           DOVER                      
+ 1000-STORE 00000004:  1000 012 1004 SALLY           DOVER                      
+ 1000-READ  00000005:  1000 002 1005 SANDY           DOLITTLE                   
+ 1000-STORE 00000005:  1000 002 1005 SANDY           DOLITTLE                   
+ 1000-READ  00000006:  5300 001 1006 SAM             SMITH                      
+ 1000-STORE 00000006:  5300 001 1006 SAM             SMITH                      
+ 8000A: COMMIT WS-UPDATE-COUNTER = 0006                                         
+ 1000-READ  00000007:  5100 005 1007 SAMUEL          SMITHE                     
+ 1000-STORE 00000007:  5100 005 1007 SAMUEL          SMITHE                     
+ 1000-READ  00000008:  2000 008 1008 SAMSON          SMYTHE                     
+ 1000-STORE 00000008:  2000 008 1008 SAMSON          SMYTHE                     
+ CEE3211S The system detected a decimal-divide exception.                       
+          From compile unit EMPDEMO2 at entry point EMPDEMO2 at statement 604 at
+                                                                                
+-----------------------------------------------------------                     
+ STEP03 - automatic restart at record 7                                         
+          since last commit was at update-counter = 6                           
+-----------------------------------------------------------                     
+ START: EMPDEMO2 - SHOW EMPLOYEE JOB HISTORY                                    
+ DATE = 980505 TIME = 083408                                                    
+ 0500B: COMMIT-FREQ=0003                                                        
+ 0500B: ABEND-LOC=0000                                                          
+ 8500 RESTARTING AT UPDATE-COUNTER=0006                                         
+ 8510-SKIP  00000001:  5300 001 1001 JOHN            DOE                        
+ 8510-SKIP  00000002:  5100 005 1002 JANE            DOE                        
+ 8510-SKIP  00000003:  2000 008 1003 JIM             DOVE                       
+ 8510-SKIP  00000004:  1000 012 1004 SALLY           DOVER                      
+ 8510-SKIP  00000005:  1000 002 1005 SANDY           DOLITTLE                   
+ 8510-SKIP  00000006:  5300 001 1006 SAM             SMITH                      
+ 8500 REPOSITION ON //INPUT1 FILE COMPLETED                                     
+ -------------------------------------------                                    
+ 1000-READ  00000007:  5100 005 1007 SAMUEL          SMITHE                     
+ 1000-STORE 00000007:  5100 005 1007 SAMUEL          SMITHE                     
+ 1000-READ  00000008:  2000 008 1008 SAMSON          SMYTHE                     
+ 1000-STORE 00000008:  2000 008 1008 SAMSON          SMYTHE                     
+ 1000-READ  00000009:  1000 012 1009 JOHNNY          SMITTIE                    
+ 1000-STORE 00000009:  1000 012 1009 JOHNNY          SMITTIE                    
+ 8000A: COMMIT WS-UPDATE-COUNTER = 0009                                         
+ 1000-READ  00000010:  1000 002 1010 JIMMY           SMITHSON                   
+ 1000-STORE 00000010:  1000 002 1010 JIMMY           SMITHSON                   
+ 1000-READ  00000011:  1000 008 1011 JON             SMITHSTEIN                 
+ 1000-STORE 00000011:  1000 008 1011 JON             SMITHSTEIN                 
+                                                                                
+ ---------- FINAL STATISTICS ----------------                                   
+                                                                                
+  NUMBER OF INPUTS= 00000011                                                    
+                                                                                
+  NUMBER OF RECORDS BY RECORD-TYPE:                                             
+   EMPLOYEE-RECS STORED =          5                                            
+  DUPLICATES NOT STORED =          0                                            
+    MISSING DEPARTMENTS =          0                                            
+    MISSING OFFICES     =          0                                            
+  RECORDS FROM //INPUT1 =         11                                            
+                                                                                
+                                                                                
+ DATE = 980505                                                                  
+ TIME = 083410                                                                  
+                                                                                
+                                                                                
+ *******************************************************************************
+         PAGES-READ=             0   PAGES-REQUESTED=           103             
+      PAGES-WRITTEN=             0 BUFFER-UTIL-RATIO=           0.0             
+        CALC-TARGET=             5     CALC-OVERFLOW=             0             
+         VIA-TARGET=             0      VIA-OVERFLOW=             0             
+    LINES-REQUESTED=           147     CALLS-TO-IDMS=            20             
+   FRAGMENTS-STORED=             0    RECS-RELOCATED=             0             
+ *******************************************************************************
+                                                                                

@@ -1,0 +1,51 @@
+        IDENTIFICATION DIVISION.
+        PROGRAM-ID.  Numbers4.
+        DATA DIVISION.
+        WORKING-STORAGE SECTION.
+        01  VALID-NUMBER             PIC X VALUE 'N'.
+        01  LEAD-SEP-NEG-9-5V99AN.
+            05  LEAD-SEP-NEG-9-5V99  PIC S9(5)V99
+                            SIGN LEADING SEPARATE VALUE ZERO.
+        01  LEAD-SEP-CHAR-9-5V99AN.
+            05  LEAD-SEP-CHAR-SIGN   PIC X VALUE SPACE.
+            05  LEAD-SEP-CHAR-9-5V99 PIC 9(5)V99 VALUE ZERO.
+        01  LEAD-SEP-CHAR-RESULT     PIC S9(5)V99
+                            SIGN LEADING SEPARATE VALUE ZERO.
+        PROCEDURE DIVISION.
+        0000-MAIN.
+            PERFORM 0100-LOOP1
+               UNTIL VALID-NUMBER = 'Y'.
+            DISPLAY 'THE NUMBER ENTERED IS: '
+               LEAD-SEP-NEG-9-5V99.
+            MOVE 'N' TO VALID-NUMBER.
+            PERFORM 0200-LOOP2
+               UNTIL VALID-NUMBER = 'Y'.
+            MOVE LEAD-SEP-CHAR-9-5V99 TO LEAD-SEP-CHAR-RESULT.
+            IF LEAD-SEP-CHAR-SIGN = '-'
+            MULTIPLY LEAD-SEP-CHAR-RESULT BY -1
+               GIVING LEAD-SEP-CHAR-RESULT.
+            DISPLAY 'THE NUMBER ENTERED IS: '
+               LEAD-SEP-CHAR-RESULT.
+            STOP RUN.
+        0100-LOOP1.
+            MOVE ZERO TO LEAD-SEP-NEG-9-5V99.
+            DISPLAY 'ENTER S9(5)V99 AS +/- AND 7 DIGITS: '.
+            ACCEPT LEAD-SEP-NEG-9-5V99AN.
+            IF LEAD-SEP-NEG-9-5V99 NOT NUMERIC
+               DISPLAY 'TRY AGAIN'.
+            IF LEAD-SEP-NEG-9-5V99 NUMERIC
+               MOVE 'Y' TO VALID-NUMBER.
+        0200-LOOP2.
+            MOVE ZERO TO LEAD-SEP-CHAR-9-5V99.
+            MOVE SPACE TO LEAD-SEP-CHAR-SIGN.
+            DISPLAY 'ENTER S9(5)V99 AS +/- AND 7 DIGITS: '.
+            ACCEPT LEAD-SEP-CHAR-9-5V99AN.
+            MOVE 'Y' TO VALID-NUMBER.
+            IF LEAD-SEP-CHAR-9-5V99 NOT NUMERIC
+               MOVE 'N' TO VALID-NUMBER.
+            IF LEAD-SEP-CHAR-SIGN NOT = '-'
+               AND LEAD-SEP-CHAR-SIGN NOT = '+'
+               AND LEAD-SEP-CHAR-SIGN NOT = SPACE
+                 MOVE 'N' TO VALID-NUMBER.
+            IF VALID-NUMBER = 'N'
+               DISPLAY 'TRY AGAIN'.

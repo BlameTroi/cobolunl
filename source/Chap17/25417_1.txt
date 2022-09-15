@@ -1,0 +1,34 @@
+        IDENTIFICATION DIVISION.
+        PROGRAM-ID.
+            COPY_FILE.
+        ENVIRONMENT DIVISION.
+        INPUT-OUTPUT SECTION.
+        FILE-CONTROL.
+            SELECT TEXT-IN-FILE ASSIGN TO DISK "filein.dat".
+            SELECT TEXT-OUT-FILE ASSIGN TO "FILEOUT.DAT".
+        DATA DIVISION.
+        FILE SECTION.
+        FD  TEXT-IN-FILE
+            LABEL RECORDS ARE OMITTED.
+        01  TEXT-IN-RECORD             PICTURE X(80).
+        FD  TEXT-OUT-FILE
+            LABEL RECORDS ARE OMITTED.
+        01  LINE-OUT-RECORD            PICTURE X(80).
+        WORKING-STORAGE SECTION.
+        01  OUT-OF-DATA-FLAG           PICTURE X(1).
+        PROCEDURE DIVISION.
+            OPEN INPUT TEXT-IN-FILE
+                  OUTPUT TEXT-OUT-FILE.
+            MOVE 'N' TO OUT-OF-DATA-FLAG.
+            READ TEXT-IN-FILE
+                AT END MOVE 'Y' TO OUT-OF-DATA-FLAG.
+            PERFORM B010-PROCESS-WRITE-READ
+                UNTIL OUT-OF-DATA-FLAG = 'Y'.
+            CLOSE TEXT-IN-FILE
+                  TEXT-OUT-FILE.
+            STOP RUN.
+        B010-PROCESS-WRITE-READ.
+            MOVE TEXT-IN-RECORD TO LINE-OUT-RECORD.
+            WRITE LINE-OUT-RECORD.
+            READ TEXT-IN-FILE
+               AT END MOVE 'Y’ TO OUT-OF-DATA-FLAG.

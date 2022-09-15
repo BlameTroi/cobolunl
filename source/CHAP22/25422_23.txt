@@ -1,0 +1,17 @@
+           MOVE ‘123456789’ TO WS-SEARCH-EMP-NUM
+           MOVE ‘JONES’ TO WS-NEW-LAST-NAME
+
+           MOVE WS-SEARCH-EMP-NUM TO EMPLOYEE-NUM
+           OBTAIN CALC EMPLOYEE-REC
+           IF DB-REC-NOT-FOUND
+              DISPLAY ‘ EMPLOYEE-NUM=‘ EMPLOYEE-NUM ‘ WAS NOT FOUND’
+           ELSE
+              PERFORM IDMS-STATUS
+              MOVE EMPLOYEE-LAST-NAME TO WS-OLD-LAST-NAME
+              MOVE WS-NEW-LAST-NAME TO EMPLOYEE-LAST-NAME
+              MODIFY EMPLOYEE-REC
+              PERFORM IDMS-STATUS
+              DISPLAY ‘ EMPLOYEE-NUM=‘ EMPLOYEE-NUM
+                 ‘ LAST-NAME CHANGED FROM: ‘
+                 ‘ TO: ‘ EMPLOYEE-LAST-NAME
+           END-IF

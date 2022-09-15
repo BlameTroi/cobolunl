@@ -1,0 +1,34 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  CGILOC.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT  STDOUT ASSIGN  "STDOUT"
+               ORGANIZATION SEQUENTIAL
+               ACCESS       SEQUENTIAL
+               FILE STATUS  STDOUT-FILESTATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  STDOUT LABEL RECORDS STANDARD.
+       01  STDOUT-RECORD           PIC X(256).
+
+       WORKING-STORAGE SECTION.
+       01  STDOUT-FILESTATUS       PIC XX.
+
+      * ASCII Carriage return/Line Feed
+       01  CRLF                    PIC XX VALUE X"0D0A".
+
+       PROCEDURE DIVISION.
+
+       MAIN.
+           OPEN OUTPUT STDOUT
+           INITIALIZE STDOUT-RECORD
+           STRING "Location: http://www.mcp.com" CRLF CRLF
+               DELIMITED SIZE INTO STDOUT-RECORD
+           END-STRING
+           WRITE STDOUT-RECORD
+           CLOSE STDOUT
+           STOP RUN
+           .

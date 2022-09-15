@@ -1,0 +1,70 @@
+//********************************************************************* 00040000
+//COBNRW   PROC SYSOUT='*',                                             00050000
+//         MEMBER=DUMMY,                                                00060000
+//         WORK=VIO,                                                    00070000
+//         ADV=NOADV,                                                   00080000
+//         DATA='DATA(31)',                                             00090000
+//         DYNAM='DYNAM',                                               00100000
+//         RENT='NORENT',                                               00110000
+//         COBRET=5,                                                    00120000
+//         MAP=NOMAP,OFFSET=NOOFFSET                                    00130000
+//*                                                                   * 00140000
+//DMLC     EXEC PGM=IDMSDMLC,PARM='DBNAME=SYSDICT'                      00150000
+//STEPLIB DD  DISP=SHR,DSN=IDMS.TEST.LOADLIB                            00160000
+//        DD  DISP=SHR,DSN=IDMS.R120.LOADLIB                           00170000
+//SYSLST   DD SYSOUT=*                                                  00180000
+//SYSPRINT DD SYSOUT=*                                                  00190000
+//*SYSCTL   DD DISP=SHR,DSN=IDMS.TEST.SYSCTL                            00200000
+//SYSPCH   DD DSN=&DMLCOUT,UNIT=VIO,DISP=(NEW,PASS),                    00210000
+//         DCB=BLKSIZE=80,SPACE=(CYL,(4,1))                             00220000
+//SYS001   DD UNIT=VIO,SPACE=(TRK,(10,10)),                             00230000
+//            DCB=(RECFM=VB,LRECL=133,BLKSIZE=1334,DSORG=PS)            00240000
+//SYS002   DD UNIT=VIO,SPACE=(TRK,(10,10)),                             00250000
+//            DCB=(RECFM=VB,LRECL=133,BLKSIZE=1334,DSORG=PS)            00260000
+//SYS003   DD UNIT=VIO,SPACE=(TRK,(10,10)),                             00270000
+//            DCB=(RECFM=VB,LRECL=133,BLKSIZE=1334,DSORG=PS)            00280000
+//*SYSIPT   DD DSN=SDH.NEAL.SRCLIB(IDDRPT01),DISP=SHR                   00290000
+//*                                                                     00300000
+//COB      EXEC PGM=IGYCRCTL,REGION=2M,COND=(4,LE),                     00310000
+//         PARM=('NOC(S),FLAG(I,E),TEST(NONE,SYM),XREF(FULL),NOSSR',    00320000
+//             '&ADV,&DATA,&DYNAM,&RENT,&MAP,&OFFSET')                  00330000
+//STEPLIB  DD   DSN=IGY.V1R2M0.SIGYCOMP,DISP=SHR                        00340000
+//SYSLIB  DD   DISP=SHR,DSN=NRW.WORK.SRCLIB                             00360000
+//SYSPRINT DD   SYSOUT=&SYSOUT                                          00370000
+//*SYSIN    DD   DSN=&&WRK1WORK,DISP=(OLD,DELETE)                       00380000
+//SYSLIN   DD   DSN=&&LOADSET,SPACE=(TRK,(10,5),RLSE),                  00390000
+//         DISP=(NEW,PASS),UNIT=&WORK,                                  00400000
+//         DCB=(RECFM=FB,LRECL=80,BLKSIZE=800)                          00410000
+//SYSUT1   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00420000
+//SYSUT2   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00430000
+//SYSUT3   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00440000
+//SYSUT4   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00450000
+//SYSUT5   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00460000
+//SYSUT6   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00470000
+//SYSUT7   DD   UNIT=&WORK,SPACE=(TRK,(20,5))                           00480000
+//SYSIN    DD   DSN=&&DMLCOUT,DISP=(OLD,DELETE)                         00490000
+//*                                                                     00500000
+//CKCOB    EXEC PGM=CMPABEND,COND=(&COBRET,GT,COB)                      00510000
+//*                                                                     00520000
+//LKED     EXEC PGM=PANLINK,REGION=2M,                                  00530000
+//  PARM='LIST,XREF,LET,MAP,SIZE=(1536K,512K)'                          00540000
+//SYSUT1   DD UNIT=SYSDA,SPACE=(TRK,(5,2))                              00550000
+//PEXLIN   DD UNIT=SYSDA,SPACE=(TRK,(5,2))                              00560000
+//PEXUT2   DD UNIT=SYSDA,SPACE=(TRK,(5,2))                              00570000
+//PEXLMOD  DD UNIT=SYSDA,SPACE=(TRK,(5,2,5))                            00580000
+//SYSLLIB  DD DSN=CEE.V1R5M0.SCEELKED,DISP=SHR                          00590000
+//SYSLMOD  DD DISP=SHR,DSN=NRW.WORK.LOADLIB(&MEMBER)                    00600000
+//SYSLIN   DD DSN=&&LOADSET,DISP=(OLD,DELETE)                           00610000
+//         DD DDNAME=SYSIN                                              00620000
+//SYSPRINT DD SYSOUT=&SYSOUT                                            00630000
+//SYSLPRT  DD SYSOUT=&SYSOUT                                            00640000
+//PANPRINT DD SYSOUT=&SYSOUT                                            00650000
+// PEND                                                                 00660000
+//COMPSTEP EXEC COBNRW MEMBER=EMPDEMO1                                  00670000
+//DMLC.SYSIDMS DD *                                                     00680000
+DBNAME=SYSDICT                                                          00690000
+DICTNAME=SYSDICT                                                        00700000
+//DMLC.SYSIPT DD DSN=NRW.IDMS.SAMPLES(EMPDEMO1)                         00710005
+//LKED.SYSIN  DD *                                                      00720005
+ NAME EMPDEMO1(R)                                                       00730005
+//*                                                                     00740005

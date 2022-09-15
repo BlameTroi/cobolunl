@@ -1,0 +1,21 @@
+WORKING-STORAGE SECTION.
+
+  COMPUTER-DATE.
+    05  THIS-YEAR               PIC XX.
+    05  THIS-MONTH              PIC 99.
+    05  THIS-DAY                PIC XX.
+
+  MONTH-LIST.
+    05  FILLER PIC X(30) VALUE ‘January   February  March’.
+    05  FILLER PIC X(30) VALUE ‘April     May       June’.
+    05  FILLER PIC X(30) VALUE ‘July      August    September’.
+    05  FILLER PIC X(30) VALUE ‘October   November  December’.
+  MONTH-TABLE REDEFINES MONTH-LIST.
+    05  MONTH-NAME OCCURS 12 TIMES PIC X(10).
+
+PROCEDURE DIVISION.
+
+-SHOW-THE-MONTH.
+    ACCEPT COMPUTER-DATE FROM DATE.
+    DISPLAY MONTH-NAME (THIS-MONTH) THIS-DAY ‘, ‘ THIS-YEAR.
+    STOP RUN.

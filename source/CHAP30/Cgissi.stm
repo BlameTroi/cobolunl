@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+    <TITLE>Contact Maintenance</TITLE>
+</HEAD>
+<BODY>
+    <CENTER><H2>Contact Maintenance</H2>
+    <FORM ACTION="CGISSI.EXE" METHOD="POST" NAME="FORM">
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="600" BGCOLOR="lightsteelblue">
+    <TR>
+      <TD ALIGN="RIGHT" WIDTH="80">Last name</TD>
+      <TD ALIGN="LEFT">
+        <INPUT TYPE="TEXT" NAME="LAST_NAME" MAXLENGTH="30" SIZE="30"
+<!-- #include virtual = "/mcp/LAST_NAME.htm" -->
+        >&nbsp;</TD>
+    </TR>
+    <TR>
+      <TD ALIGN="RIGHT" WIDTH="80">First name</TD>
+      <TD ALIGN="LEFT"><INPUT TYPE="TEXT" NAME="FIRST_NAME" MAXLENGTH="15" SIZE="15"
+<!-- #include virtual = "/mcp/FIRST_NAME.htm" -->
+      >&nbsp;</TD>
+    </TR>
+    <TR>
+      <TD ALIGN="RIGHT" WIDTH="80">Street</TD>
+      <TD ALIGN="LEFT"><INPUT TYPE="TEXT" NAME="STREET" MAXLENGTH="80" SIZE="30"
+<!-- #include virtual = "/mcp/STREET.htm" -->
+      >&nbsp;</TD>
+    </TR>
+    <TR>
+      <TD ALIGN="RIGHT" WIDTH="80">City</TD>
+      <TD ALIGN="LEFT"><INPUT TYPE="TEXT" NAME="CITY" MAXLENGTH="50" SIZE="30"
+<!-- #include virtual = "/mcp/CITY.htm" -->
+      >&nbsp;</TD>
+    </TR>
+    <TR>
+      <TD ALIGN="RIGHT" WIDTH="80">Phone</TD>
+      <TD ALIGN="LEFT"><INPUT TYPE="TEXT" NAME="PHONE" MAXLENGTH="10" SIZE="10"
+<!-- #include virtual = "/mcp/PHONE.htm" -->
+      >&nbsp;</TD>
+    </TR>
+    </TABLE>
+    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2 WIDTH="600" BGCOLOR="lightsteelblue">
+    <TR><TD BGCOLOR="lightsteelblue">
+<!-- #include virtual = "/mcp/PROMPT.htm" -->
+    &nbsp;</TD></TR>
+    <TR><TD>
+      <INPUT TYPE="SUBMIT" NAME="CLIENT_REQUEST" VALUE="Add">&nbsp;
+      <INPUT TYPE="SUBMIT" NAME="CLIENT_REQUEST" VALUE="Inquire">&nbsp;
+      <INPUT TYPE="SUBMIT" NAME="CLIENT_REQUEST" VALUE="Change">&nbsp;
+      <INPUT TYPE="SUBMIT" NAME="CLIENT_REQUEST" VALUE="Delete">&nbsp;
+      <INPUT TYPE="RESET" VALUE="Start Over">&nbsp;
+    </TD></TR>
+    </TABLE>
+    </CENTER>
+    </FORM>
+    <H3>Instructions</H3>
+    Enter a last name, first name and any other additional information and press
+    the button for the action to perform. If the action is invalid then an error
+    message will be displayed.
+    <P>
+    If you wish to inquire on a name enter the exact value from one of the
+    following names:
+    ):
+    <UL>
+    <LI>William Jackson
+    <LI>Michelle Edwards
+    <LI>Angelo Lopez
+    <LI>George Dubois
+    </UL>
+    Any other name which is in the contact file may also be used.
+    <P>
+    An <STRONG>inquire</STRONG>, <STRONG>change</STRONG> or <STRONG>delete</STRONG>
+    will only succeed if the record already exists.
+    An <STRONG>add</STRONG> will only succeed if the record does not already exist.
+
+</BODY>
+</HTML>
