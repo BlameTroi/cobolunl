@@ -1,74 +1,74 @@
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID.  CGIGET.
-
-       ENVIRONMENT DIVISION.
-       INPUT-OUTPUT SECTION.       FILE-CONTROL.
-           SELECT  STDOUT ASSIGN  "STDOUT"
-               ORGANIZATION LINE SEQUENTIAL
-               ACCESS       SEQUENTIAL
-               FILE STATUS  STDOUT-FILESTATUS.
-
-       DATA DIVISION.
-       FILE SECTION.
-       FD  STDOUT LABEL RECORDS STANDARD.
-       01  STDOUT-RECORD           PIC X(256).
-
-       WORKING-STORAGE SECTION.
-       01  REQUEST-METHOD          PIC X(4)    VALUE SPACE.
-       01  QUERY-STRING            PIC X(256)  VALUE SPACE.
-
-       01  FIELD-NAME              PIC X(10)   VALUE SPACE.
-       01  FIELD-VALUE             PIC X(249)  VALUE SPACE.
-       01  QS-PTR                  PIC 9(4) BINARY.
-       01  FN-PTR                  PIC 9(4) BINARY.
-       01  FV-PTR                  PIC 9(4) BINARY.
-
-       01  CHAR-ENCODED.
-         05  CHAR-ENCODED-BINARY   PIC 99 BINARY OCCURS 2.
-       01  CHAR-DECODED            PIC X.
-       01  CHAR-DECODED-BINARY REDEFINES CHAR-DECODED
-                                   PIC 99 BINARY.
-       01  CHAR-PTR                PIC 99 BINARY.
-
-       01  STDOUT-FILESTATUS       PIC XX.
-
-       PROCEDURE DIVISION.
-       MAIN.
-           PERFORM GET-INPUT
-           PERFORM PUT-OUTPUT
-           STOP RUN
-           .
-
-       GET-INPUT.
-           DISPLAY "REQUEST_METHOD" UPON ENVIRONMENT-NAME
-           ACCEPT  REQUEST-METHOD   FROM ENVIRONMENT-VALUE
-           IF REQUEST-METHOD = "GET"
-               DISPLAY "QUERY_STRING"  UPON ENVIRONMENT-NAME
-               ACCEPT QUERY-STRING     FROM ENVIRONMENT-VALUE
-               PERFORM DECODE-URL-STRING
-           ELSE
-               MOVE "Unexpected REQUEST_METHOD" TO FIELD-VALUE
-           END-IF
-           .
-.
-.
-.
-       PUT-OUTPUT.
-           OPEN OUTPUT STDOUT
-      * The reply starts with a mime header followed by a blank line
-           MOVE "Content-type: text/html" TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-           MOVE SPACE      TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-           MOVE “<HTML><HEAD><TITLE>COBOL CGI GET Example”
-               TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-           MOVE “</TITLE></HEAD></HTML>” TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-
-     ... more of the same to create an HTML document
-.
-.
-.
-           CLOSE STDOUT
-           .
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  CGIGET.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.       FILE-CONTROL.
+           SELECT  STDOUT ASSIGN  "STDOUT"
+               ORGANIZATION LINE SEQUENTIAL
+               ACCESS       SEQUENTIAL
+               FILE STATUS  STDOUT-FILESTATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  STDOUT LABEL RECORDS STANDARD.
+       01  STDOUT-RECORD           PIC X(256).
+
+       WORKING-STORAGE SECTION.
+       01  REQUEST-METHOD          PIC X(4)    VALUE SPACE.
+       01  QUERY-STRING            PIC X(256)  VALUE SPACE.
+
+       01  FIELD-NAME              PIC X(10)   VALUE SPACE.
+       01  FIELD-VALUE             PIC X(249)  VALUE SPACE.
+       01  QS-PTR                  PIC 9(4) BINARY.
+       01  FN-PTR                  PIC 9(4) BINARY.
+       01  FV-PTR                  PIC 9(4) BINARY.
+
+       01  CHAR-ENCODED.
+         05  CHAR-ENCODED-BINARY   PIC 99 BINARY OCCURS 2.
+       01  CHAR-DECODED            PIC X.
+       01  CHAR-DECODED-BINARY REDEFINES CHAR-DECODED
+                                   PIC 99 BINARY.
+       01  CHAR-PTR                PIC 99 BINARY.
+
+       01  STDOUT-FILESTATUS       PIC XX.
+
+       PROCEDURE DIVISION.
+       MAIN.
+           PERFORM GET-INPUT
+           PERFORM PUT-OUTPUT
+           STOP RUN
+           .
+
+       GET-INPUT.
+           DISPLAY "REQUEST_METHOD" UPON ENVIRONMENT-NAME
+           ACCEPT  REQUEST-METHOD   FROM ENVIRONMENT-VALUE
+           IF REQUEST-METHOD = "GET"
+               DISPLAY "QUERY_STRING"  UPON ENVIRONMENT-NAME
+               ACCEPT QUERY-STRING     FROM ENVIRONMENT-VALUE
+               PERFORM DECODE-URL-STRING
+           ELSE
+               MOVE "Unexpected REQUEST_METHOD" TO FIELD-VALUE
+           END-IF
+           .
+.
+.
+.
+       PUT-OUTPUT.
+           OPEN OUTPUT STDOUT
+      * The reply starts with a mime header followed by a blank line
+           MOVE "Content-type: text/html" TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+           MOVE SPACE      TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+           MOVE “<HTML><HEAD><TITLE>COBOL CGI GET Example”
+               TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+           MOVE “</TITLE></HEAD></HTML>” TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+
+     ... more of the same to create an HTML document
+.
+.
+.
+           CLOSE STDOUT
+           .

@@ -1,191 +1,191 @@
-       MAIN.
-           PERFORM GET-INPUT
-           EVALUATE FUNCTION UPPER-CASE(CLIENT-REQUEST)
-             WHEN SPACE
-               MOVE "Please read the instructions" TO STATUS-MESSAGE
-             WHEN "ADD"
-               PERFORM WRITE-CONTACT
-             WHEN "CHANGE"
-               PERFORM CHANGE-CONTACT
-             WHEN "INQUIRE"
-               PERFORM READ-CONTACT
-             WHEN "DELETE"
-              PERFORM DELETE-CONTACT
-           END-EVALUATE
-           PERFORM PUT-OUTPUT
-           STOP RUN
-           .
-
-       GET-INPUT.
-           DISPLAY "REQUEST_METHOD" UPON ENVIRONMENT-NAME
-           ACCEPT  REQUEST-METHOD   FROM ENVIRONMENT-VALUE
-           IF REQUEST-METHOD = "POST"
-               DISPLAY "CONTENT_LENGTH" UPON ENVIRONMENT-NAME
-               ACCEPT  CONTENT-LENGTH-X FROM ENVIRONMENT-VALUE
-               MOVE FUNCTION NUMVAL(CONTENT-LENGTH-X) TO CONTENT-LENGTH
-               IF CONTENT-LENGTH > 0
-                   MOVE SPACE TO STDIN-RECORD
-                   OPEN INPUT STDIN
-                   READ STDIN
-                   CLOSE STDIN
-                   INITIALIZE CONTACT-RECORD
-                   PERFORM FILL-CONTACT-RECORD
-               END-IF
-           END-IF
-           .
-
-       FILL-CONTACT-RECORD.
-           MOVE 1 TO IN-PTR
-           PERFORM UNTIL IN-PTR > CONTENT-LENGTH
-               PERFORM DECODE-URL-STRING
-               EVALUATE FIELD-NAME
-                 WHEN "CLIENT_REQUEST"
-                   MOVE FIELD-VALUE    TO CLIENT-REQUEST
-                 WHEN "LAST_NAME"
-                   MOVE FIELD-VALUE    TO CONTACT-LAST-NAME
-                 WHEN "FIRST_NAME"
-                   MOVE FIELD-VALUE    TO CONTACT-FIRST-NAME
-                 WHEN "STREET"
-                   MOVE FIELD-VALUE    TO CONTACT-STREET
-                 WHEN "CITY"
-                   MOVE FIELD-VALUE    TO CONTACT-CITY
-                 WHEN "PHONE"
-                   MOVE FUNCTION NUMVAL(FIELD-VALUE) TO CONTACT-PHONE
-                 END-EVALUATE
-           END-PERFORM
-           .
-.
-.
-.
-      WRITE-CONTACT.
-           OPEN I-O CONTACT
-           IF CONTACT-IO-OK
-               WRITE CONTACT-RECORD
-               IF CONTACT-IO-OK
-                   MOVE "Record added"     TO STATUS-MESSAGE
-               ELSE
-                   MOVE "Record not added" TO STATUS-MESSAGE
-               END-IF
-               CLOSE CONTACT
-           ELSE
-               MOVE "Error opening contact file" TO STATUS-MESSAGE
-           END-IF
-           .
-
-       READ-CONTACT.
-           OPEN INPUT CONTACT
-           IF CONTACT-IO-OK
-               READ CONTACT
-               IF CONTACT-IO-OK
-                   MOVE "Record retrieved" TO STATUS-MESSAGE
-               ELSE
-                   MOVE "Record not found" TO STATUS-MESSAGE
-               END-IF
-               CLOSE CONTACT
-           ELSE
-               MOVE "Error opening contact file" TO STATUS-MESSAGE
-           END-IF
-           .
-
-       CHANGE-CONTACT.
-           OPEN I-O CONTACT
-           IF CONTACT-IO-OK
-               MOVE CONTACT-RECORD TO CONTACT-RECORD-SAVE
-               READ CONTACT LOCK
-               IF CONTACT-IO-OK
-                   MOVE CONTACT-RECORD-SAVE TO CONTACT-RECORD
-                   REWRITE CONTACT-RECORD
-               END-IF
-               IF CONTACT-IO-OK
-                   MOVE "Record changed" TO STATUS-MESSAGE
-               ELSE
-                   MOVE "Unable to change record" TO STATUS-MESSAGE
-               END-IF
-               CLOSE CONTACT
-           ELSE
-               MOVE "Error opening contact file" TO STATUS-MESSAGE
-           END-IF
-           .
-
-       DELETE-CONTACT.
-           OPEN I-O CONTACT
-           IF CONTACT-IO-OK
-               DELETE CONTACT
-               IF CONTACT-IO-OK
-                   MOVE "Record deleted" TO STATUS-MESSAGE
-               ELSE
-                   MOVE "Unable to delete record" TO STATUS-MESSAGE
-               END-IF
-               CLOSE CONTACT
-           ELSE
-               MOVE "Error opening contact file" TO STATUS-MESSAGE
-           END-IF
-           .
-
-       PUT-OUTPUT.
-           OPEN OUTPUT STDOUT
-      * The reply starts with a mime header followed by a blank line
-           MOVE "Content-type: text/html" TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-           MOVE SPACE      TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-
-      * Read the basic form from the DOCTPL template file and apply
-      * customizations as required.
-           OPEN INPUT DOCTPL
-           PERFORM UNTIL NOT DOCTPL-IO-OK
-           INITIALIZE STDOUT-RECORD
-              READ DOCTPL
-              IF DOCTPL-IO-OK
-                   EVALUATE DOCTPL-RECORD
-                     WHEN "%%LAST_NAME%%"
-                       IF CONTACT-LAST-NAME NOT = SPACE
-                           MOVE CONTACT-LAST-NAME TO OUTPUT-VALUE
-                           PERFORM WRITE-VALUE-STDOUT
-                       END-IF
-                     WHEN "%%FIRST_NAME%%"
-                       IF CONTACT-FIRST-NAME NOT = SPACE
-                           MOVE CONTACT-FIRST-NAME TO OUTPUT-VALUE
-                           PERFORM WRITE-VALUE-STDOUT
-                       END-IF
-                     WHEN "%%STREET%%"
-                       IF CONTACT-STREET NOT = SPACE
-                           MOVE CONTACT-STREET TO OUTPUT-VALUE
-                           PERFORM WRITE-VALUE-STDOUT
-                       END-IF
-                     WHEN "%%CITY%%"
-                       IF CONTACT-CITY NOT = SPACE
-                           MOVE CONTACT-CITY TO OUTPUT-VALUE
-                           PERFORM WRITE-VALUE-STDOUT
-                       END-IF
-                     WHEN "%%PHONE%%"
-                       IF CONTACT-PHONE NOT = ZERO
-                           MOVE CONTACT-PHONE TO OUTPUT-VALUE
-                           PERFORM WRITE-VALUE-STDOUT
-                       END-IF
-                     WHEN "%%PROMPT%%"
-                       MOVE STATUS-MESSAGE TO STDOUT-RECORD
-                     WHEN OTHER
-                       MOVE DOCTPL-RECORD TO STDOUT-RECORD
-                   END-EVALUATE
-                   WRITE STDOUT-RECORD
-              END-IF
-           END-PERFORM
-           CLOSE DOCTPL
-           CLOSE STDOUT
-           .
-
-       WRITE-VALUE-STDOUT.
-           PERFORM VARYING OUT-PTR FROM LENGTH OF OUTPUT-VALUE BY -1
-             UNTIL OUT-PTR < 1
-             OR    OUTPUT-VALUE (OUT-PTR:1) NOT = SPACE
-               CONTINUE
-           END-PERFORM
-           MOVE QUOTE TO OUTPUT-VALUE (OUT-PTR + 1:1)
-
-           STRING "VALUE="
-                  QUOTE
-                  OUTPUT-VALUE DELIMITED SIZE INTO STDOUT-RECORD
-           END-STRING
-           WRITE STDOUT-RECORD
-           .
+       MAIN.
+           PERFORM GET-INPUT
+           EVALUATE FUNCTION UPPER-CASE(CLIENT-REQUEST)
+             WHEN SPACE
+               MOVE "Please read the instructions" TO STATUS-MESSAGE
+             WHEN "ADD"
+               PERFORM WRITE-CONTACT
+             WHEN "CHANGE"
+               PERFORM CHANGE-CONTACT
+             WHEN "INQUIRE"
+               PERFORM READ-CONTACT
+             WHEN "DELETE"
+              PERFORM DELETE-CONTACT
+           END-EVALUATE
+           PERFORM PUT-OUTPUT
+           STOP RUN
+           .
+
+       GET-INPUT.
+           DISPLAY "REQUEST_METHOD" UPON ENVIRONMENT-NAME
+           ACCEPT  REQUEST-METHOD   FROM ENVIRONMENT-VALUE
+           IF REQUEST-METHOD = "POST"
+               DISPLAY "CONTENT_LENGTH" UPON ENVIRONMENT-NAME
+               ACCEPT  CONTENT-LENGTH-X FROM ENVIRONMENT-VALUE
+               MOVE FUNCTION NUMVAL(CONTENT-LENGTH-X) TO CONTENT-LENGTH
+               IF CONTENT-LENGTH > 0
+                   MOVE SPACE TO STDIN-RECORD
+                   OPEN INPUT STDIN
+                   READ STDIN
+                   CLOSE STDIN
+                   INITIALIZE CONTACT-RECORD
+                   PERFORM FILL-CONTACT-RECORD
+               END-IF
+           END-IF
+           .
+
+       FILL-CONTACT-RECORD.
+           MOVE 1 TO IN-PTR
+           PERFORM UNTIL IN-PTR > CONTENT-LENGTH
+               PERFORM DECODE-URL-STRING
+               EVALUATE FIELD-NAME
+                 WHEN "CLIENT_REQUEST"
+                   MOVE FIELD-VALUE    TO CLIENT-REQUEST
+                 WHEN "LAST_NAME"
+                   MOVE FIELD-VALUE    TO CONTACT-LAST-NAME
+                 WHEN "FIRST_NAME"
+                   MOVE FIELD-VALUE    TO CONTACT-FIRST-NAME
+                 WHEN "STREET"
+                   MOVE FIELD-VALUE    TO CONTACT-STREET
+                 WHEN "CITY"
+                   MOVE FIELD-VALUE    TO CONTACT-CITY
+                 WHEN "PHONE"
+                   MOVE FUNCTION NUMVAL(FIELD-VALUE) TO CONTACT-PHONE
+                 END-EVALUATE
+           END-PERFORM
+           .
+.
+.
+.
+      WRITE-CONTACT.
+           OPEN I-O CONTACT
+           IF CONTACT-IO-OK
+               WRITE CONTACT-RECORD
+               IF CONTACT-IO-OK
+                   MOVE "Record added"     TO STATUS-MESSAGE
+               ELSE
+                   MOVE "Record not added" TO STATUS-MESSAGE
+               END-IF
+               CLOSE CONTACT
+           ELSE
+               MOVE "Error opening contact file" TO STATUS-MESSAGE
+           END-IF
+           .
+
+       READ-CONTACT.
+           OPEN INPUT CONTACT
+           IF CONTACT-IO-OK
+               READ CONTACT
+               IF CONTACT-IO-OK
+                   MOVE "Record retrieved" TO STATUS-MESSAGE
+               ELSE
+                   MOVE "Record not found" TO STATUS-MESSAGE
+               END-IF
+               CLOSE CONTACT
+           ELSE
+               MOVE "Error opening contact file" TO STATUS-MESSAGE
+           END-IF
+           .
+
+       CHANGE-CONTACT.
+           OPEN I-O CONTACT
+           IF CONTACT-IO-OK
+               MOVE CONTACT-RECORD TO CONTACT-RECORD-SAVE
+               READ CONTACT LOCK
+               IF CONTACT-IO-OK
+                   MOVE CONTACT-RECORD-SAVE TO CONTACT-RECORD
+                   REWRITE CONTACT-RECORD
+               END-IF
+               IF CONTACT-IO-OK
+                   MOVE "Record changed" TO STATUS-MESSAGE
+               ELSE
+                   MOVE "Unable to change record" TO STATUS-MESSAGE
+               END-IF
+               CLOSE CONTACT
+           ELSE
+               MOVE "Error opening contact file" TO STATUS-MESSAGE
+           END-IF
+           .
+
+       DELETE-CONTACT.
+           OPEN I-O CONTACT
+           IF CONTACT-IO-OK
+               DELETE CONTACT
+               IF CONTACT-IO-OK
+                   MOVE "Record deleted" TO STATUS-MESSAGE
+               ELSE
+                   MOVE "Unable to delete record" TO STATUS-MESSAGE
+               END-IF
+               CLOSE CONTACT
+           ELSE
+               MOVE "Error opening contact file" TO STATUS-MESSAGE
+           END-IF
+           .
+
+       PUT-OUTPUT.
+           OPEN OUTPUT STDOUT
+      * The reply starts with a mime header followed by a blank line
+           MOVE "Content-type: text/html" TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+           MOVE SPACE      TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+
+      * Read the basic form from the DOCTPL template file and apply
+      * customizations as required.
+           OPEN INPUT DOCTPL
+           PERFORM UNTIL NOT DOCTPL-IO-OK
+           INITIALIZE STDOUT-RECORD
+              READ DOCTPL
+              IF DOCTPL-IO-OK
+                   EVALUATE DOCTPL-RECORD
+                     WHEN "%%LAST_NAME%%"
+                       IF CONTACT-LAST-NAME NOT = SPACE
+                           MOVE CONTACT-LAST-NAME TO OUTPUT-VALUE
+                           PERFORM WRITE-VALUE-STDOUT
+                       END-IF
+                     WHEN "%%FIRST_NAME%%"
+                       IF CONTACT-FIRST-NAME NOT = SPACE
+                           MOVE CONTACT-FIRST-NAME TO OUTPUT-VALUE
+                           PERFORM WRITE-VALUE-STDOUT
+                       END-IF
+                     WHEN "%%STREET%%"
+                       IF CONTACT-STREET NOT = SPACE
+                           MOVE CONTACT-STREET TO OUTPUT-VALUE
+                           PERFORM WRITE-VALUE-STDOUT
+                       END-IF
+                     WHEN "%%CITY%%"
+                       IF CONTACT-CITY NOT = SPACE
+                           MOVE CONTACT-CITY TO OUTPUT-VALUE
+                           PERFORM WRITE-VALUE-STDOUT
+                       END-IF
+                     WHEN "%%PHONE%%"
+                       IF CONTACT-PHONE NOT = ZERO
+                           MOVE CONTACT-PHONE TO OUTPUT-VALUE
+                           PERFORM WRITE-VALUE-STDOUT
+                       END-IF
+                     WHEN "%%PROMPT%%"
+                       MOVE STATUS-MESSAGE TO STDOUT-RECORD
+                     WHEN OTHER
+                       MOVE DOCTPL-RECORD TO STDOUT-RECORD
+                   END-EVALUATE
+                   WRITE STDOUT-RECORD
+              END-IF
+           END-PERFORM
+           CLOSE DOCTPL
+           CLOSE STDOUT
+           .
+
+       WRITE-VALUE-STDOUT.
+           PERFORM VARYING OUT-PTR FROM LENGTH OF OUTPUT-VALUE BY -1
+             UNTIL OUT-PTR < 1
+             OR    OUTPUT-VALUE (OUT-PTR:1) NOT = SPACE
+               CONTINUE
+           END-PERFORM
+           MOVE QUOTE TO OUTPUT-VALUE (OUT-PTR + 1:1)
+
+           STRING "VALUE="
+                  QUOTE
+                  OUTPUT-VALUE DELIMITED SIZE INTO STDOUT-RECORD
+           END-STRING
+           WRITE STDOUT-RECORD
+           .

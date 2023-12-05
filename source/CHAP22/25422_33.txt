@@ -1,4 +1,4 @@
-        ENVIRONMENT DIVISION.
-        IDMS-CONTROL SECTION.
-        PROTOCOL.    MODE IS IDMS-DC
-                     IDMS-RECORDS MANUAL.
+        ENVIRONMENT DIVISION.
+        IDMS-CONTROL SECTION.
+        PROTOCOL.    MODE IS IDMS-DC
+                     IDMS-RECORDS MANUAL.

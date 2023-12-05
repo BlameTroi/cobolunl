@@ -1,11 +1,11 @@
-process WINDOW(1950), MLEPROC
- TODAYS-DATE            PIC 9(6)    DATE YYMMDD.
-...
- POLICY-RECORD.
-...
-    05 MATURITY-DATE        PIC 9(6)    DATE YYMMDD.
-...
-
-    ACCEPT TODAYS-DATE FROM DATE
-        IF TODAYS-DATE IS GREATER THAN OR EQUAL TO MATURITY-DATE
-            DISPLAY ‘Policy is mature, updating benefits record: ’.
+process WINDOW(1950), MLEPROC
+ TODAYS-DATE            PIC 9(6)    DATE YYMMDD.
+...
+ POLICY-RECORD.
+...
+    05 MATURITY-DATE        PIC 9(6)    DATE YYMMDD.
+...
+
+    ACCEPT TODAYS-DATE FROM DATE
+        IF TODAYS-DATE IS GREATER THAN OR EQUAL TO MATURITY-DATE
+            DISPLAY ‘Policy is mature, updating benefits record: ’.

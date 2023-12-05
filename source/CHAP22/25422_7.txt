@@ -1,11 +1,11 @@
-        0500-INITIALIZE.
-
-            ACCEPT TODAYS-DATE FROM DATE.
-            ACCEPT TODAYS-TIME FROM TIME.
-            DISPLAY 'START: DBATDEMO - RELOAD AUDHST-RECS '
-            DISPLAY 'DATE = ' TODAYS-DATE
-                    ' TIME = ' TODAYS-TIME.
-
-            COPY IDMS SUBSCHEMA-BINDS.
-        0500-EXIT.
-            EXIT.
+        0500-INITIALIZE.
+
+            ACCEPT TODAYS-DATE FROM DATE.
+            ACCEPT TODAYS-TIME FROM TIME.
+            DISPLAY 'START: DBATDEMO - RELOAD AUDHST-RECS '
+            DISPLAY 'DATE = ' TODAYS-DATE
+                    ' TIME = ' TODAYS-TIME.
+
+            COPY IDMS SUBSCHEMA-BINDS.
+        0500-EXIT.
+            EXIT.

@@ -1,113 +1,113 @@
- ENVIRONMENT DIVISION.
- INPUT-OUTPUT SECTION.
- FILE-CONTROL.
-     SELECT OPTIONAL NAME-FILE
-                         ASSIGN TO DISK
-                         ORGANIZATION IS RELATIVE
-                         ACCESS MODE IS DYNAMIC
-                         RELATIVE KEY IS
-                             WS-NAME-KEY.
- DATA DIVISION.
- FILE SECTION.
-
- FD  NAME-FILE
-     VALUE OF FILE-ID IS "RELATIVE.DAT".
- 01  NAME-RECORD.
-     03  NAME-NAME               PIC  X(30).
-     03  NAME-ADDR-1             PIC  X(30).
-     03  NAME-ADDR-2             PIC  X(30).
-     03  NAME-PHONE              PIC  X(16).
-
- WORKING-STORAGE SECTION.
-
- 77  WS-NAME-KEY                 PIC  9(06)  VALUE 0.
-
- PROCEDURE DIVISION.
-
- 000000-CONTROL.
-     OPEN I-O NAME-FILE.
-
-     CLOSE NAME-FILE.
-     STOP RUN.
-
- 011000-ADD-LOOP.
-
-     INITIALIZE NAME-RECORD.
-     MOVE SH-NAME-KEY TO WS-NAME-KEY.
-     MOVE SH-NAME     TO NAME-NAME.
-     MOVE SH-ADDR-1   TO NAME-ADDR-1.
-     MOVE SH-ADDR-2   TO NAME-ADDR-2.
-     MOVE SH-PHONE    TO NAME-PHONE.
-     WRITE NAME-RECORD
-         INVALID KEY
-             MOVE "DUPLICATE KEY" TO SH-ERROR-MSG
-             DISPLAY ERROR-SCREEN
-             EXIT PARAGRAPH.
-
- 020100-GET-KEY.
-
-     INITIALIZE NAME-RECORD.
-     MOVE SH-NAME-KEY TO WS-NAME-KEY.
-     START NAME-FILE
-         KEY NOT < WS-NAME-KEY
-         INVALID KEY
-             MOVE "NO RECORDS FOUND" TO SH-ERROR-MSG
-             DISPLAY ERROR-SCREEN
-             EXIT PARAGRAPH.
-     READ NAME-FILE NEXT.
-
- 020200-SELECT-LOOP.
-
-     EVALUATE SH-ANSWER
-         WHEN "N"
-             IF (NT-NAME(NT-SIZE) NOT = SPACES)
-                 INITIALIZE NAME-RECORD
-                 MOVE NT-NAME-KEY(NT-SIZE) TO WS-NAME-KEY
-                 READ NAME-FILE
-                 READ NAME-FILE NEXT
-                     NOT AT END
-                         PERFORM 020300-FORWARD
-                 END-READ
-             END-IF
-         WHEN "1" THRU "9"
-             IF (NT-NAME(SH-ANSWER-NUM) NOT = SPACES)
-                 INITIALIZE NAME-RECORD
-                 MOVE NT-NAME-KEY(SH-ANSWER-NUM) TO WS-NAME-KEY
-                 READ NAME-FILE
-                 PERFORM 021000-VIEW
-                 MOVE 1 TO SH-ESCAPE-FLAG
-                 EXIT PARAGRAPH
-             END-IF
-         WHEN OTHER
-             EXIT PARAGRAPH
-     END-EVALUATE.
-
- 020310-NEXT-ADDR.
-     MOVE WS-NAME-KEY  TO NT-NAME-KEY-PIC(NT-EX).
-     MOVE NAME-NAME    TO NT-NAME        (NT-EX).
-     MOVE NAME-PHONE   TO NT-PHONE       (NT-EX).
-     MOVE WS-NAME-KEY  TO NT-NAME-KEY    (NT-EX).
-     ADD 1 TO NT-EX.
-     READ NAME-FILE NEXT
-         AT END
-             MOVE 0 TO WS-NAME-PRESENT-FLAG.
-
- 021310-ACCEPT-MOD.
-
-     DISPLAY ERASE-ERROR-SCREEN.
-     MOVE SH-ADDR-1  TO NAME-ADDR-1.
-     MOVE SH-ADDR-2  TO NAME-ADDR-2.
-     MOVE SH-PHONE   TO NAME-PHONE.
-     REWRITE NAME-RECORD.
-
- 021410-ACCEPT-DEL.
-
-     EVALUATE SH-ANSWER
-         WHEN "N"
-             MOVE 1 TO SH-ESCAPE-FLAG
-             EXIT PARAGRAPH
-         WHEN "Y"
-             DELETE NAME-FILE
-             MOVE 1 TO SH-ESCAPE-FLAG
-             EXIT PARAGRAPH
-     END-EVALUATE.
+ ENVIRONMENT DIVISION.
+ INPUT-OUTPUT SECTION.
+ FILE-CONTROL.
+     SELECT OPTIONAL NAME-FILE
+                         ASSIGN TO DISK
+                         ORGANIZATION IS RELATIVE
+                         ACCESS MODE IS DYNAMIC
+                         RELATIVE KEY IS
+                             WS-NAME-KEY.
+ DATA DIVISION.
+ FILE SECTION.
+
+ FD  NAME-FILE
+     VALUE OF FILE-ID IS "RELATIVE.DAT".
+ 01  NAME-RECORD.
+     03  NAME-NAME               PIC  X(30).
+     03  NAME-ADDR-1             PIC  X(30).
+     03  NAME-ADDR-2             PIC  X(30).
+     03  NAME-PHONE              PIC  X(16).
+
+ WORKING-STORAGE SECTION.
+
+ 77  WS-NAME-KEY                 PIC  9(06)  VALUE 0.
+
+ PROCEDURE DIVISION.
+
+ 000000-CONTROL.
+     OPEN I-O NAME-FILE.
+
+     CLOSE NAME-FILE.
+     STOP RUN.
+
+ 011000-ADD-LOOP.
+
+     INITIALIZE NAME-RECORD.
+     MOVE SH-NAME-KEY TO WS-NAME-KEY.
+     MOVE SH-NAME     TO NAME-NAME.
+     MOVE SH-ADDR-1   TO NAME-ADDR-1.
+     MOVE SH-ADDR-2   TO NAME-ADDR-2.
+     MOVE SH-PHONE    TO NAME-PHONE.
+     WRITE NAME-RECORD
+         INVALID KEY
+             MOVE "DUPLICATE KEY" TO SH-ERROR-MSG
+             DISPLAY ERROR-SCREEN
+             EXIT PARAGRAPH.
+
+ 020100-GET-KEY.
+
+     INITIALIZE NAME-RECORD.
+     MOVE SH-NAME-KEY TO WS-NAME-KEY.
+     START NAME-FILE
+         KEY NOT < WS-NAME-KEY
+         INVALID KEY
+             MOVE "NO RECORDS FOUND" TO SH-ERROR-MSG
+             DISPLAY ERROR-SCREEN
+             EXIT PARAGRAPH.
+     READ NAME-FILE NEXT.
+
+ 020200-SELECT-LOOP.
+
+     EVALUATE SH-ANSWER
+         WHEN "N"
+             IF (NT-NAME(NT-SIZE) NOT = SPACES)
+                 INITIALIZE NAME-RECORD
+                 MOVE NT-NAME-KEY(NT-SIZE) TO WS-NAME-KEY
+                 READ NAME-FILE
+                 READ NAME-FILE NEXT
+                     NOT AT END
+                         PERFORM 020300-FORWARD
+                 END-READ
+             END-IF
+         WHEN "1" THRU "9"
+             IF (NT-NAME(SH-ANSWER-NUM) NOT = SPACES)
+                 INITIALIZE NAME-RECORD
+                 MOVE NT-NAME-KEY(SH-ANSWER-NUM) TO WS-NAME-KEY
+                 READ NAME-FILE
+                 PERFORM 021000-VIEW
+                 MOVE 1 TO SH-ESCAPE-FLAG
+                 EXIT PARAGRAPH
+             END-IF
+         WHEN OTHER
+             EXIT PARAGRAPH
+     END-EVALUATE.
+
+ 020310-NEXT-ADDR.
+     MOVE WS-NAME-KEY  TO NT-NAME-KEY-PIC(NT-EX).
+     MOVE NAME-NAME    TO NT-NAME        (NT-EX).
+     MOVE NAME-PHONE   TO NT-PHONE       (NT-EX).
+     MOVE WS-NAME-KEY  TO NT-NAME-KEY    (NT-EX).
+     ADD 1 TO NT-EX.
+     READ NAME-FILE NEXT
+         AT END
+             MOVE 0 TO WS-NAME-PRESENT-FLAG.
+
+ 021310-ACCEPT-MOD.
+
+     DISPLAY ERASE-ERROR-SCREEN.
+     MOVE SH-ADDR-1  TO NAME-ADDR-1.
+     MOVE SH-ADDR-2  TO NAME-ADDR-2.
+     MOVE SH-PHONE   TO NAME-PHONE.
+     REWRITE NAME-RECORD.
+
+ 021410-ACCEPT-DEL.
+
+     EVALUATE SH-ANSWER
+         WHEN "N"
+             MOVE 1 TO SH-ESCAPE-FLAG
+             EXIT PARAGRAPH
+         WHEN "Y"
+             DELETE NAME-FILE
+             MOVE 1 TO SH-ESCAPE-FLAG
+             EXIT PARAGRAPH
+     END-EVALUATE.

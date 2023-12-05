@@ -1,138 +1,138 @@
-******************************************************************
-*                                                                *
-*                      G E T   N U M B E R                       *
-*                                                                *
-*    CONVERTS A NUMBER IN FREE FORMAT DISPLAY FORM:              *
-*        FOR EXAMPLE:                                            *
-*                                                                *
-*            "999,999,999,999.999999 "                           *
-*            "-999,999,999,999.999999"                           *
-*            "              -23.61   "                           *
-*            "                      4"                           *
-*            "0                      "                           *
-*            "    .000001            "                           *
-*            "0000000000123456789.10-"                           *
-*            "                       "  BLANK IS VALID = 0       *
-*                                                                *
-*    INTO FIXED NUMERIC FORM:                                    *
-*                                                                *
-*        PIC S9(12)V9(06)                                        *
-*                                                                *
-*                                                                *
-*    USAGE:  MOVE <FREE FORM NUMBER> TO NW-WORK-NBR.             *
-*            PERFORM 001000-GET-NBR                              *
-*               THRU 001000-EXIT.                                *
-*                                                                *
-*    RESULT: NW-NBR-ERROR-FLAG = 0 INPUT IS A VALID NUMBER       *
-*                                1 INPUT NOT A VALID NUMBER      *
-*                                                                *
-*       IF NW-NBR-ERROR-FLAG = 0 THEN:                           *
-*                                                                *
-*            NW-EXTRACTED-NBR  = NUMBER AS:  PIC S9(12)V9(06)    *
-*                                                                *
-*            NW-DEC-PLACES     = NUMBER OF DIGITS TO THE RIGHT   *
-*                                OF THE DECIMAL POINT (0=NONE)   *
-*                                                                *
-*            NW-BLD-SIGN       = +1 OR -1 AS:  PIC S9(01)        *
-*                                                                *
-*            NW-BLD-INTEGER    = INTEGER DIGITS AS:  PIC  9(12)  *
-*                                                                *
-*            NW-BLD-DECIMAL    = DECIMAL DIGITS AS:  PIC V9(06)  *
-*                                                                *
-******************************************************************
-
- 01  NUMBER-WORK-AREA.
-     03  NW-NBR-ERROR-FLAG       PIC  9(01).
-     03  NW-WORK-NBR.
-         05  NW-WORK-CHAR        OCCURS 25 TIMES
-                                 INDEXED BY NW-WX
-                                            NW-WLIM.
-             07  NW-WORK-DIGIT       PIC  9(01).
-     03  NW-DEC-PLACES           PIC  9(02).
-     03  NW-BLD-SIGN             PIC S9(01).
-     03  NW-BLD-NBR              PIC  9(12)V9(06).
-     03  NW-BLD-NBR-SPLIT        REDEFINES NW-BLD-NBR.
-         05  NW-BLD-INTEGER          PIC  9(12).
-         05  NW-BLD-DECIMAL          PIC V9(06).
-             88  NW-RESULT-INTEGER               VALUE ZERO.
-         05  NW-BLD-DEC-DIGITS       REDEFINES NW-BLD-DECIMAL.
-             07  NW-BLD-DEC-DIGIT        OCCURS 6 TIMES
-                                         INDEXED BY NW-BDX
-                                                    NW-BDLIM
-                                             PIC  9(01).
-     03  NW-EXTRACTED-NBR        PIC S9(12)V9(06).
-
- 001000-GET-NBR.
-     MOVE 0      TO NW-NBR-ERROR-FLAG.
-     MOVE ZERO   TO NW-EXTRACTED-NBR.
-     MOVE 0      TO NW-DEC-PLACES.
-     MOVE ZERO   TO NW-BLD-NBR.
-     MOVE +1     TO NW-BLD-SIGN.
-     SET NW-BDX  TO 1.
-     SET NW-WLIM TO 25.
-     SET NW-WX  TO 1.
-     SEARCH NW-WORK-CHAR
-         WHEN NW-WORK-CHAR(NW-WX) NOT = SPACE
-             PERFORM 001010-DECODE-NBR
-     END-SEARCH.
-     IF (NW-WORK-NBR NOT = SPACES)
-         MOVE 1 TO NW-NBR-ERROR-FLAG
-     ELSE
-         COMPUTE NW-EXTRACTED-NBR = NW-BLD-NBR * NW-BLD-SIGN
-     END-IF.
-
- 001010-DECODE-NBR.
-     IF (NW-WORK-CHAR(NW-WX) = "-")
-         MOVE -1    TO NW-BLD-SIGN
-         MOVE SPACE TO NW-WORK-CHAR(NW-WX)
-         SET NW-WX UP BY 1
-     END-IF.
-     PERFORM 001020-GET-INTEGER-PART
-         UNTIL (NW-WX > NW-WLIM).
-     SET NW-DEC-PLACES TO NW-BDX.
-     SUBTRACT 1 FROM NW-DEC-PLACES.
-
- 001020-GET-INTEGER-PART.
-     IF (NW-WORK-CHAR(NW-WX) NUMERIC)
-         IF (NW-BLD-INTEGER > 99999999999)
-             SET NW-WX TO NW-WLIM
-         ELSE
-             COMPUTE NW-BLD-INTEGER =
-                 NW-BLD-INTEGER * 10 + NW-WORK-DIGIT(NW-WX)
-             MOVE SPACE TO NW-WORK-CHAR(NW-WX)
-         END-IF
-     ELSE
-         IF (NW-WORK-CHAR(NW-WX) = ".")
-             MOVE SPACES TO NW-WORK-CHAR(NW-WX)
-             SET NW-WX UP BY 1
-             PERFORM 001030-GET-DECIMAL-PART
-                 UNTIL (NW-WX > NW-WLIM)
-         ELSE
-             IF (NW-WORK-CHAR(NW-WX) = ",")
-                 MOVE SPACE TO NW-WORK-CHAR(NW-WX)
-             ELSE
-                 SET NW-WX TO NW-WLIM
-             END-IF
-         END-IF
-     END-IF.
-     SET NW-WX UP BY 1.
-
- 001030-GET-DECIMAL-PART.
-     IF (NW-WORK-CHAR(NW-WX) NUMERIC)
-         IF (NW-BDX > 6)
-             SET NW-WX  TO NW-WLIM
-         ELSE
-             MOVE NW-WORK-DIGIT(NW-WX) TO NW-BLD-DEC-DIGIT(NW-BDX)
-             MOVE SPACES TO NW-WORK-CHAR(NW-WX)
-             SET NW-BDX UP BY 1
-         END-IF
-     ELSE
-         IF (NW-WORK-CHAR(NW-WX) = "-")
-             MOVE -1    TO NW-BLD-SIGN
-             MOVE SPACE TO NW-WORK-CHAR(NW-WX)
-             SET NW-WX  TO NW-WLIM
-         ELSE
-             SET NW-WX  TO NW-WLIM
-         END-IF
-     END-IF.
-     SET NW-WX UP BY 1.
+******************************************************************
+*                                                                *
+*                      G E T   N U M B E R                       *
+*                                                                *
+*    CONVERTS A NUMBER IN FREE FORMAT DISPLAY FORM:              *
+*        FOR EXAMPLE:                                            *
+*                                                                *
+*            "999,999,999,999.999999 "                           *
+*            "-999,999,999,999.999999"                           *
+*            "              -23.61   "                           *
+*            "                      4"                           *
+*            "0                      "                           *
+*            "    .000001            "                           *
+*            "0000000000123456789.10-"                           *
+*            "                       "  BLANK IS VALID = 0       *
+*                                                                *
+*    INTO FIXED NUMERIC FORM:                                    *
+*                                                                *
+*        PIC S9(12)V9(06)                                        *
+*                                                                *
+*                                                                *
+*    USAGE:  MOVE <FREE FORM NUMBER> TO NW-WORK-NBR.             *
+*            PERFORM 001000-GET-NBR                              *
+*               THRU 001000-EXIT.                                *
+*                                                                *
+*    RESULT: NW-NBR-ERROR-FLAG = 0 INPUT IS A VALID NUMBER       *
+*                                1 INPUT NOT A VALID NUMBER      *
+*                                                                *
+*       IF NW-NBR-ERROR-FLAG = 0 THEN:                           *
+*                                                                *
+*            NW-EXTRACTED-NBR  = NUMBER AS:  PIC S9(12)V9(06)    *
+*                                                                *
+*            NW-DEC-PLACES     = NUMBER OF DIGITS TO THE RIGHT   *
+*                                OF THE DECIMAL POINT (0=NONE)   *
+*                                                                *
+*            NW-BLD-SIGN       = +1 OR -1 AS:  PIC S9(01)        *
+*                                                                *
+*            NW-BLD-INTEGER    = INTEGER DIGITS AS:  PIC  9(12)  *
+*                                                                *
+*            NW-BLD-DECIMAL    = DECIMAL DIGITS AS:  PIC V9(06)  *
+*                                                                *
+******************************************************************
+
+ 01  NUMBER-WORK-AREA.
+     03  NW-NBR-ERROR-FLAG       PIC  9(01).
+     03  NW-WORK-NBR.
+         05  NW-WORK-CHAR        OCCURS 25 TIMES
+                                 INDEXED BY NW-WX
+                                            NW-WLIM.
+             07  NW-WORK-DIGIT       PIC  9(01).
+     03  NW-DEC-PLACES           PIC  9(02).
+     03  NW-BLD-SIGN             PIC S9(01).
+     03  NW-BLD-NBR              PIC  9(12)V9(06).
+     03  NW-BLD-NBR-SPLIT        REDEFINES NW-BLD-NBR.
+         05  NW-BLD-INTEGER          PIC  9(12).
+         05  NW-BLD-DECIMAL          PIC V9(06).
+             88  NW-RESULT-INTEGER               VALUE ZERO.
+         05  NW-BLD-DEC-DIGITS       REDEFINES NW-BLD-DECIMAL.
+             07  NW-BLD-DEC-DIGIT        OCCURS 6 TIMES
+                                         INDEXED BY NW-BDX
+                                                    NW-BDLIM
+                                             PIC  9(01).
+     03  NW-EXTRACTED-NBR        PIC S9(12)V9(06).
+
+ 001000-GET-NBR.
+     MOVE 0      TO NW-NBR-ERROR-FLAG.
+     MOVE ZERO   TO NW-EXTRACTED-NBR.
+     MOVE 0      TO NW-DEC-PLACES.
+     MOVE ZERO   TO NW-BLD-NBR.
+     MOVE +1     TO NW-BLD-SIGN.
+     SET NW-BDX  TO 1.
+     SET NW-WLIM TO 25.
+     SET NW-WX  TO 1.
+     SEARCH NW-WORK-CHAR
+         WHEN NW-WORK-CHAR(NW-WX) NOT = SPACE
+             PERFORM 001010-DECODE-NBR
+     END-SEARCH.
+     IF (NW-WORK-NBR NOT = SPACES)
+         MOVE 1 TO NW-NBR-ERROR-FLAG
+     ELSE
+         COMPUTE NW-EXTRACTED-NBR = NW-BLD-NBR * NW-BLD-SIGN
+     END-IF.
+
+ 001010-DECODE-NBR.
+     IF (NW-WORK-CHAR(NW-WX) = "-")
+         MOVE -1    TO NW-BLD-SIGN
+         MOVE SPACE TO NW-WORK-CHAR(NW-WX)
+         SET NW-WX UP BY 1
+     END-IF.
+     PERFORM 001020-GET-INTEGER-PART
+         UNTIL (NW-WX > NW-WLIM).
+     SET NW-DEC-PLACES TO NW-BDX.
+     SUBTRACT 1 FROM NW-DEC-PLACES.
+
+ 001020-GET-INTEGER-PART.
+     IF (NW-WORK-CHAR(NW-WX) NUMERIC)
+         IF (NW-BLD-INTEGER > 99999999999)
+             SET NW-WX TO NW-WLIM
+         ELSE
+             COMPUTE NW-BLD-INTEGER =
+                 NW-BLD-INTEGER * 10 + NW-WORK-DIGIT(NW-WX)
+             MOVE SPACE TO NW-WORK-CHAR(NW-WX)
+         END-IF
+     ELSE
+         IF (NW-WORK-CHAR(NW-WX) = ".")
+             MOVE SPACES TO NW-WORK-CHAR(NW-WX)
+             SET NW-WX UP BY 1
+             PERFORM 001030-GET-DECIMAL-PART
+                 UNTIL (NW-WX > NW-WLIM)
+         ELSE
+             IF (NW-WORK-CHAR(NW-WX) = ",")
+                 MOVE SPACE TO NW-WORK-CHAR(NW-WX)
+             ELSE
+                 SET NW-WX TO NW-WLIM
+             END-IF
+         END-IF
+     END-IF.
+     SET NW-WX UP BY 1.
+
+ 001030-GET-DECIMAL-PART.
+     IF (NW-WORK-CHAR(NW-WX) NUMERIC)
+         IF (NW-BDX > 6)
+             SET NW-WX  TO NW-WLIM
+         ELSE
+             MOVE NW-WORK-DIGIT(NW-WX) TO NW-BLD-DEC-DIGIT(NW-BDX)
+             MOVE SPACES TO NW-WORK-CHAR(NW-WX)
+             SET NW-BDX UP BY 1
+         END-IF
+     ELSE
+         IF (NW-WORK-CHAR(NW-WX) = "-")
+             MOVE -1    TO NW-BLD-SIGN
+             MOVE SPACE TO NW-WORK-CHAR(NW-WX)
+             SET NW-WX  TO NW-WLIM
+         ELSE
+             SET NW-WX  TO NW-WLIM
+         END-IF
+     END-IF.
+     SET NW-WX UP BY 1.

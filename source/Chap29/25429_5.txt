@@ -1,54 +1,54 @@
-       PUT-OUTPUT.
-          * Create #include files used by CGISSI.STM
-           MOVE "LAST_NAME.htm"    TO SSI-FILESPEC
-           MOVE CONTACT-LAST-NAME  TO SSI-VALUE
-           PERFORM WRITE-VALUE-SSI
-
-           MOVE "FIRST_NAME.htm"   TO SSI-FILESPEC
-           MOVE CONTACT-FIRST-NAME TO SSI-VALUE
-           PERFORM WRITE-VALUE-SSI
-
-           MOVE "STREET.htm"   TO SSI-FILESPEC
-           MOVE CONTACT-STREET TO SSI-VALUE
-           PERFORM WRITE-VALUE-SSI
-
-           MOVE "CITY.htm"     TO SSI-FILESPEC
-           MOVE CONTACT-CITY   TO SSI-VALUE
-           PERFORM WRITE-VALUE-SSI
-
-           MOVE "PHONE.htm"    TO SSI-FILESPEC
-           MOVE CONTACT-PHONE  TO SSI-VALUE
-           PERFORM WRITE-VALUE-SSI
-
-           MOVE "PROMPT.htm"   TO SSI-FILESPEC
-           OPEN OUTPUT SSI
-           MOVE STATUS-MESSAGE TO SSI-RECORD
-           WRITE SSI-RECORD
-           CLOSE SSI
-
-      * Redirect client to SSI document
-           OPEN OUTPUT STDOUT
-           MOVE "Location: CGISSI.STM" TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-           MOVE SPACE      TO STDOUT-RECORD
-           WRITE STDOUT-RECORD
-           CLOSE STDOUT
-           .
-
-       WRITE-VALUE-SSI.
-           OPEN OUTPUT SSI
-           PERFORM VARYING SSI-PTR FROM LENGTH OF SSI-VALUE BY -1
-             UNTIL SSI-PTR < 1
-             OR    SSI-VALUE (SSI-PTR:1) NOT = SPACE
-               CONTINUE
-           END-PERFORM
-           MOVE QUOTE TO SSI-VALUE (SSI-PTR + 1:1)
-
-           INITIALIZE SSI-RECORD
-           STRING "VALUE="
-                  QUOTE
-                  SSI-VALUE DELIMITED SIZE INTO SSI-RECORD
-           END-STRING
-           WRITE SSI-RECORD
-           CLOSE SSI
-           .
+       PUT-OUTPUT.
+          * Create #include files used by CGISSI.STM
+           MOVE "LAST_NAME.htm"    TO SSI-FILESPEC
+           MOVE CONTACT-LAST-NAME  TO SSI-VALUE
+           PERFORM WRITE-VALUE-SSI
+
+           MOVE "FIRST_NAME.htm"   TO SSI-FILESPEC
+           MOVE CONTACT-FIRST-NAME TO SSI-VALUE
+           PERFORM WRITE-VALUE-SSI
+
+           MOVE "STREET.htm"   TO SSI-FILESPEC
+           MOVE CONTACT-STREET TO SSI-VALUE
+           PERFORM WRITE-VALUE-SSI
+
+           MOVE "CITY.htm"     TO SSI-FILESPEC
+           MOVE CONTACT-CITY   TO SSI-VALUE
+           PERFORM WRITE-VALUE-SSI
+
+           MOVE "PHONE.htm"    TO SSI-FILESPEC
+           MOVE CONTACT-PHONE  TO SSI-VALUE
+           PERFORM WRITE-VALUE-SSI
+
+           MOVE "PROMPT.htm"   TO SSI-FILESPEC
+           OPEN OUTPUT SSI
+           MOVE STATUS-MESSAGE TO SSI-RECORD
+           WRITE SSI-RECORD
+           CLOSE SSI
+
+      * Redirect client to SSI document
+           OPEN OUTPUT STDOUT
+           MOVE "Location: CGISSI.STM" TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+           MOVE SPACE      TO STDOUT-RECORD
+           WRITE STDOUT-RECORD
+           CLOSE STDOUT
+           .
+
+       WRITE-VALUE-SSI.
+           OPEN OUTPUT SSI
+           PERFORM VARYING SSI-PTR FROM LENGTH OF SSI-VALUE BY -1
+             UNTIL SSI-PTR < 1
+             OR    SSI-VALUE (SSI-PTR:1) NOT = SPACE
+               CONTINUE
+           END-PERFORM
+           MOVE QUOTE TO SSI-VALUE (SSI-PTR + 1:1)
+
+           INITIALIZE SSI-RECORD
+           STRING "VALUE="
+                  QUOTE
+                  SSI-VALUE DELIMITED SIZE INTO SSI-RECORD
+           END-STRING
+           WRITE SSI-RECORD
+           CLOSE SSI
+           .

@@ -1,9 +1,9 @@
- IDENTIFICATION DIVISION.
-PROGRAM-ID.  MAINPRG1.                                 (1)
-
- PROCEDURE DIVISION.
- 0100-MAIN.
-     DISPLAY 'BEGIN MAIN PROGRAM'.
-     CALL 'SUBPRG1'.                                    (2)
-     DISPLAY 'END OF MAIN PROGRAM'.
-     STOP RUN.                                          (3)
+ IDENTIFICATION DIVISION.
+PROGRAM-ID.  MAINPRG1.                                 (1)
+
+ PROCEDURE DIVISION.
+ 0100-MAIN.
+     DISPLAY 'BEGIN MAIN PROGRAM'.
+     CALL 'SUBPRG1'.                                    (2)
+     DISPLAY 'END OF MAIN PROGRAM'.
+     STOP RUN.                                          (3)

@@ -1,10 +1,10 @@
-Connected to SQL Anywhere 5.0 Sample
-Enter ID number or -1 to Quit -> 1
-  Name: Jane Hildebrand
--> 2
-  Name: Larry Simmon
--> 11
-  Name: William Kelly
--> 100
-Record not found
--> -1
+Connected to SQL Anywhere 5.0 Sample
+Enter ID number or -1 to Quit -> 1
+  Name: Jane Hildebrand
+-> 2
+  Name: Larry Simmon
+-> 11
+  Name: William Kelly
+-> 100
+Record not found
+-> -1

@@ -1,46 +1,46 @@
-//DB2STAT JOB …
-//*******************************************************//
-//*  PRECOMPILE, COMPILE, AND LINK DB2STAT USING        *//
-//*  THE DSNHICOB JCL PROCEDURE.                        *//
-//*******************************************************//
-//COBPREP  EXEC DSNHICOB,MEM=DB2STAT,
-//         PARM.PC=('HOST(IBMCOB)',APOST,APOSTSQL,NOSOURCE,NOXREF,
-//         'STDSQL(NO),DEC(31)'),
-//         PARM.COB='APOST,XREF,NODYNAM,SOURCE'
-//*******************************************************//
-//*  DATA SETS USED FOR PREPARING DB2STAT:              *//
-//*    USER.DBRMLIB.DATA HOLDS THE DBRM                 *//
-//*    USER.SRCLIB.DATA HOLDS THE SOURCE PROGRAM AND    *//
-//*      ANY INCLUDE FILES NEEDED AT PRECOMPILE TIME    *//
-//*    USER.RUNLIB.LOAD HOLDS THE LOAD MODULE           *//
-//*******************************************************//
-//PC.DBRMLIB   DD DSN=USER.DBRMLIB.DATA(DB2STAT),
-//             DISP=SHR
-//PC.SYSLIB    DD DSN=USER.SRCLIB.DATA,
-//             DISP=SHR
-//PC.SYSIN     DD  DSN=USER.SRCLIB.DATA(DB2STAT),
-//             DISP=SHR
-//LKED.SYSLMOD DD DSN=USER.RUNLIB.LOAD(DB2STAT),
-//             DISP=SHR
-//LKED.RUNLIB  DD DSN=USER.RUNLIB.LOAD,
-//             DISP=SHR
-//LKED.SYSIN   DD *
-     INCLUDE SYSLIB(DSNELI)
-//*
-//BIND     EXEC PGM=IKJEFT01,DYNAMNBR=20
-//*******************************************************//
-//* BIND THE DBRM FOR DB2STAT INTO A PACKAGE, THEN      *//
-//* BIND THE PACKAGE INTO A PLAN ON DB2 SUBSYSTEM DSN.  *//
-//*******************************************************//
-//DBRMLIB  DD DSN=USER.DBRMLIB.DATA,DISP=SHR
-//SYSTSPRT DD  SYSOUT=*
-//SYSPRINT DD  SYSOUT=*
-//SYSUDUMP DD  SYSOUT=*
-//SYSTSIN  DD  *
- DSN SYSTEM(DSN)
- BIND PACKAGE(COBTEST) MEMBER(DB2STAT) –
-   ACTION(REPLACE) ISOLATION(CS)
- BIND PLAN(COBTEST) PKLIST(*.COBTEST.COBTEST) –
-   ACTION(REPLACE) ISOLATION(CS)
- END
-//*
+//DB2STAT JOB …
+//*******************************************************//
+//*  PRECOMPILE, COMPILE, AND LINK DB2STAT USING        *//
+//*  THE DSNHICOB JCL PROCEDURE.                        *//
+//*******************************************************//
+//COBPREP  EXEC DSNHICOB,MEM=DB2STAT,
+//         PARM.PC=('HOST(IBMCOB)',APOST,APOSTSQL,NOSOURCE,NOXREF,
+//         'STDSQL(NO),DEC(31)'),
+//         PARM.COB='APOST,XREF,NODYNAM,SOURCE'
+//*******************************************************//
+//*  DATA SETS USED FOR PREPARING DB2STAT:              *//
+//*    USER.DBRMLIB.DATA HOLDS THE DBRM                 *//
+//*    USER.SRCLIB.DATA HOLDS THE SOURCE PROGRAM AND    *//
+//*      ANY INCLUDE FILES NEEDED AT PRECOMPILE TIME    *//
+//*    USER.RUNLIB.LOAD HOLDS THE LOAD MODULE           *//
+//*******************************************************//
+//PC.DBRMLIB   DD DSN=USER.DBRMLIB.DATA(DB2STAT),
+//             DISP=SHR
+//PC.SYSLIB    DD DSN=USER.SRCLIB.DATA,
+//             DISP=SHR
+//PC.SYSIN     DD  DSN=USER.SRCLIB.DATA(DB2STAT),
+//             DISP=SHR
+//LKED.SYSLMOD DD DSN=USER.RUNLIB.LOAD(DB2STAT),
+//             DISP=SHR
+//LKED.RUNLIB  DD DSN=USER.RUNLIB.LOAD,
+//             DISP=SHR
+//LKED.SYSIN   DD *
+     INCLUDE SYSLIB(DSNELI)
+//*
+//BIND     EXEC PGM=IKJEFT01,DYNAMNBR=20
+//*******************************************************//
+//* BIND THE DBRM FOR DB2STAT INTO A PACKAGE, THEN      *//
+//* BIND THE PACKAGE INTO A PLAN ON DB2 SUBSYSTEM DSN.  *//
+//*******************************************************//
+//DBRMLIB  DD DSN=USER.DBRMLIB.DATA,DISP=SHR
+//SYSTSPRT DD  SYSOUT=*
+//SYSPRINT DD  SYSOUT=*
+//SYSUDUMP DD  SYSOUT=*
+//SYSTSIN  DD  *
+ DSN SYSTEM(DSN)
+ BIND PACKAGE(COBTEST) MEMBER(DB2STAT) –
+   ACTION(REPLACE) ISOLATION(CS)
+ BIND PLAN(COBTEST) PKLIST(*.COBTEST.COBTEST) –
+   ACTION(REPLACE) ISOLATION(CS)
+ END
+//*

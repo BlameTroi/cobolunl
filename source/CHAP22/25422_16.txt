@@ -1,8 +1,8 @@
- PROGRAM NAME ------ TESTERR1 
- ERROR STATUS ------ 0301  
- ERROR RECORD ------ EMPLOYEE-REC 
- ERROR SET ---------                     .
- ERROR AREA -------- USER-AREA-NAME        .
- LAST GOOD RECORD --
- LAST GOOD AREA ----
- DML SEQUENCE--------0000000008
+ PROGRAM NAME ------ TESTERR1 
+ ERROR STATUS ------ 0301  
+ ERROR RECORD ------ EMPLOYEE-REC 
+ ERROR SET ---------                     .
+ ERROR AREA -------- USER-AREA-NAME        .
+ LAST GOOD RECORD --
+ LAST GOOD AREA ----
+ DML SEQUENCE--------0000000008
